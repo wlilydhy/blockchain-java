@@ -5,6 +5,7 @@ import lombok.Data;
 import one.wangwei.blockchain.util.ByteUtils;
 import org.apache.commons.codec.digest.DigestUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -142,6 +143,7 @@ public class MerkleTree {
         return DigestUtils.sha256(mergedBytes);
     }
 
+
     /**
      * Merkle Tree节点
      */
@@ -152,4 +154,100 @@ public class MerkleTree {
         private Node right;
     }
 
+    public void print(){
+        List<Node> nodes = new ArrayList<>();
+        if(this.getRoot()!=null){
+            nodes.add(this.root);
+        }
+        while(!nodes.isEmpty()){
+            Node current = nodes.get(0);
+            nodes.remove(0);
+            System.out.println(current.hash.toString());
+            if(current.getLeft()!=null){
+                nodes.add(current.getLeft());
+            }
+            if(current.getRight()!=null){
+                nodes.add(current.getRight());
+            }
+        }
+    }
+
+
+    public void MerkleProof(byte[] TxHash) {
+        int index = -1;
+        int length = this.getLeafHashes().length-1;
+        for (int i = 0; i < length; i++) {
+            if (byteEqual(this.getLeafHashes()[i], TxHash)) {
+                index = i;
+                //System.out.println("index="+index);
+                break;
+            }
+        }
+        if (index == -1) {
+            return;
+        }
+        List<Node> result = new ArrayList<>();
+        result.add(this.getRoot());
+        Node current =this.getRoot();
+        int mid = length / 2;
+        //System.out.println("mid="+mid);
+        while (true) {
+            if(isLeaf(current)){
+                result.add(current.getLeft());
+                result.add(current.getRight());
+                break;
+            }
+            //右子树
+            if (index > mid) {
+                mid = (length+mid)/2;
+                //System.out.println("mid="+mid);
+                result.add(current.getLeft());
+                result.add(current.getRight());
+
+                current=current.getRight();
+            }
+            //左子树
+            else if (index <= mid) {
+                mid=mid/2;
+                //System.out.println("mid="+mid);
+                result.add(current.getLeft());
+                result.add(current.getRight());
+                current=current.getLeft();
+            }
+        }
+//        System.out.println("proof length is "+ result.size());
+//        for(int i=0;i<result.size();i++){
+//            System.out.println("proof:"+result.get(i).getHash().toString());
+//        }
+    }
+
+    private static boolean isLeaf(Node node){
+        if(node.getLeft().getLeft()==null&&node.getRight().getRight()==null){
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean byteEqual(byte[] a ,byte[] b) {
+        if (a.length == b.length) {
+            for (int i = 0; i < a.length; i++) {
+                if (a[i] != b[i]) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private static int abs(int a,int b){
+        int k=a-b;
+        if(k>0){
+            return k;
+        }
+        else if(k<=0){
+            return -k;
+        }
+        return 0;
+    }
 }

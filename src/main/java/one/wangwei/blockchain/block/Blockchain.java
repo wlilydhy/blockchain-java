@@ -63,9 +63,9 @@ public class Blockchain {
             Transaction coinbaseTX = Transaction.newCoinbaseTX(address, genesisCoinbaseData);
             Block genesisBlock = Block.newGenesisBlock(coinbaseTX);
             lastBlockHash = genesisBlock.getHash();
-            System.out.println("lastblockhash is "+lastBlockHash);
+            //System.out.println("lastblockhash is "+lastBlockHash);
             RocksDBUtils.getInstance().putBlock(genesisBlock);
-            System.out.println("why stop");
+            //System.out.println("why stop");
             RocksDBUtils.getInstance().putLastBlockHash(lastBlockHash);
         }
         return new Blockchain(lastBlockHash);
@@ -79,10 +79,10 @@ public class Blockchain {
     public Block mineBlock(Transaction[] transactions) {
         // 挖矿前，先验证交易记录
         for (Transaction tx : transactions) {
-            System.out.println("Tx count is"+transactions.length);
-            System.out.println("input length: "+tx.getInputs().length);
-            System.out.println("input's txid: "+tx.getInputs()[0].getTxId().length);
-            System.out.println("input length: "+tx.getInputs()[0].getTxOutputIndex());
+//            System.out.println("Tx count is"+transactions.length);
+//            System.out.println("input length: "+tx.getInputs().length);
+//            System.out.println("input's txid: "+tx.getInputs()[0].getTxId().length);
+//            System.out.println("input length: "+tx.getInputs()[0].getTxOutputIndex());
             if (!this.verifyTransactions(tx)) {
                 log.error("ERROR: Fail to mine block ! Invalid transaction ! tx=" + tx.toString());
                 throw new RuntimeException("ERROR: Fail to mine block ! Invalid transaction ! ");

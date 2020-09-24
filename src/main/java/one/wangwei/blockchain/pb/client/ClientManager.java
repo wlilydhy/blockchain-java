@@ -185,6 +185,7 @@ public class ClientManager extends Manager {
 			// very weird... should log this
 			return false;
 		} catch (ProtocolAlreadyRunning e) {
+
 			// even more weird... should log this too
 			return false;
 		}

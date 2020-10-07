@@ -56,9 +56,9 @@ public class    RocksDBUtils {
      */
     private static final String bestHeight = "h";
 
-    //private volatile static RocksDBUtils instance;
+    private volatile static RocksDBUtils instance;
 
-    /*public static RocksDBUtils getInstance() {
+    public static RocksDBUtils getInstance() {
         if (instance == null) {
             synchronized (RocksDBUtils.class) {
                 if (instance == null) {
@@ -67,11 +67,11 @@ public class    RocksDBUtils {
             }
         }
         return instance;
-    }*/
-    private static final RocksDBUtils instance = new RocksDBUtils();
-    public static RocksDBUtils getInstance(){
-        return instance;
     }
+//    private static final RocksDBUtils instance = new RocksDBUtils();
+//    public static RocksDBUtils getInstance(){
+//        return instance;
+//    }
 
     private RocksDB db;
 

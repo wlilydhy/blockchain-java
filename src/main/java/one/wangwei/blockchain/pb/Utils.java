@@ -1,6 +1,11 @@
 package one.wangwei.blockchain.pb;
 
+import one.wangwei.blockchain.block.Block;
 import one.wangwei.blockchain.pb.protocols.ICallback;
+import one.wangwei.blockchain.transaction.Transaction;
+import one.wangwei.blockchain.util.SerializeUtils;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -68,5 +73,29 @@ public class Utils {
 	 */
 	public void cleanUp() {
 		timer.cancel();
+	}
+
+	public String BlockToString(Block block){
+		byte[] bytes = SerializeUtils.serialize(block);
+		String str = Hex.encodeHexString(bytes);
+		return str;
+	}
+
+	public Block StringToBlock(String str) throws DecoderException {
+		byte[] sblockre = Hex.decodeHex(str);
+		Block block = (Block) SerializeUtils.deserialize(sblockre);
+		return block;
+	}
+
+	public String TxToString(Transaction transaction){
+		byte[] bytes=SerializeUtils.serialize(transaction);
+		String str=Hex.encodeHexString(bytes);
+		return str;
+	}
+
+	public Transaction StringToTx(String str) throws DecoderException {
+		byte[] sre = Hex.decodeHex(str);
+		Transaction transaction = (Transaction) SerializeUtils.deserialize(sre);
+		return transaction;
 	}
 }

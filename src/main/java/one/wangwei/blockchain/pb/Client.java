@@ -1,5 +1,8 @@
 package one.wangwei.blockchain.pb;
 
+import one.wangwei.blockchain.pb.Strategy.HelloWorld;
+import one.wangwei.blockchain.pb.Strategy.SendBlock;
+import one.wangwei.blockchain.pb.protocols.InvalidMessage;
 import org.apache.commons.cli.*;
 import one.wangwei.blockchain.pb.client.ClientManager;
 
@@ -27,8 +30,7 @@ public class Client  {
 		System.exit(-1);
 	}
 	
-	public static void main( String[] args ) throws IOException
-    {
+	public static void main( String[] args ) throws IOException, InvalidMessage {
     	// set a nice log format
 		System.setProperty("java.util.logging.SimpleFormatter.format",
                 "[%1$tl:%1$tM:%1$tS:%1$tL] %2$s %4$s: %5$s%n");
@@ -66,7 +68,10 @@ public class Client  {
         // and the connection will use a thread that prevents the JVM
         // from terminating immediately
 		//System.out.println("host"+host+"  port"+port);
-        new ClientManager(host,9999);
-        
+        new ClientManager(host,9999, SendBlock.strategyName);
+
+
+
+
     }
 }

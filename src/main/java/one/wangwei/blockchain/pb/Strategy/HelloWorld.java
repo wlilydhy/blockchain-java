@@ -8,6 +8,7 @@ import one.wangwei.blockchain.pb.protocols.HelloWorld.HelloWorldProtocol;
 public class HelloWorld implements ConnectionStrategy{
     ClientManager clientManager;
     Endpoint endpoint;
+    public static final String strategyName = "HelloWorld";
     public HelloWorld(ClientManager clientManager,Endpoint endpoint){
         this.clientManager=clientManager;
         this.endpoint=endpoint;

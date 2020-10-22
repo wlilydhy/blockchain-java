@@ -1,14 +1,25 @@
 package one.wangwei.blockchain.pb.client;
 
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.SneakyThrows;
+import one.wangwei.blockchain.Net.Inv;
 import one.wangwei.blockchain.pb.*;
 import one.wangwei.blockchain.pb.Strategy.ConnectionStrategy;
+import one.wangwei.blockchain.pb.Strategy.HelloWorld;
+import one.wangwei.blockchain.pb.Strategy.InvalidStrategy;
+import one.wangwei.blockchain.pb.Strategy.SendBlock;
 import one.wangwei.blockchain.pb.protocols.HelloWorld.HelloWorldProtocol;
 import one.wangwei.blockchain.pb.protocols.IRequestReplyProtocol;
+import one.wangwei.blockchain.pb.protocols.Inv.InvProtocol;
+import one.wangwei.blockchain.pb.protocols.InvalidMessage;
 import one.wangwei.blockchain.pb.protocols.Protocol;
 import one.wangwei.blockchain.pb.protocols.Version.VersionProtocol;
+import one.wangwei.blockchain.pb.protocols.getData.getDataProtocol;
 import one.wangwei.blockchain.pb.protocols.keepalive.KeepAliveProtocol;
 import one.wangwei.blockchain.pb.protocols.session.SessionProtocol;
+
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -26,44 +37,89 @@ import java.util.logging.Logger;
  * @author aaron
  *
  */
+
 public class ClientManager extends Manager {
 	private static Logger log = Logger.getLogger(ClientManager.class.getName());
 	private SessionProtocol sessionProtocol;
 	private KeepAliveProtocol keepAliveProtocol;
 	private VersionProtocol versionProtocol;
 	private HelloWorldProtocol helloWorldProtocol;
+	private InvProtocol invProtocol;
+	private getDataProtocol getDataProtocol;
 	private Socket socket;
 	private ConnectionStrategy strategy;
+	private String StrategyString;
+	private Endpoint endpoint;
 	
-	public ClientManager(String host,int port) throws UnknownHostException, IOException {
-		
-		socket=new Socket(InetAddress.getByName(host),port);
-		Endpoint endpoint = new Endpoint(socket,this);
-		endpoint.start();
-		
+	public ClientManager(String host,int port,String strategyString) throws UnknownHostException, IOException {
+
+		//socket=new Socket(InetAddress.getByName(host),port);
+		//socket=new Socket(host,port);
+		//Endpoint endpoint = new Endpoint(socket,this);
+		StrategyString = strategyString;
+
+		//初始化连接策略
+//		switch (strategyString) {
+//			case SendBlock.strategyName:
+//				this.strategy=new SendBlock(this,endpoint);
+//				break;
+//			case HelloWorld.strategyName:
+//				this.strategy=new HelloWorld(this,endpoint);
+//				break;
+//			default:
+//				System.out.println("InvalidStrategy");
+//				break;
+//				//throw new InvalidMessage();
+//
+//		}
+		//endpoint.start();
+
 		// simulate the client shutting down after 2mins
 		// this will be removed when the client actually does something
 		// controlled by the user
-		Utils.getInstance().setTimeout(()->{
-			try {
-				sessionProtocol.stopSession();
-			} catch (EndpointUnavailable e) {
-				//ignore...
-			}
-		}, 120000);
-		
-		
-		try {
-			// just wait for this thread to terminate
-			endpoint.join();
-		} catch (InterruptedException e) {
-			// just make sure the ioThread is going to terminate
-			endpoint.close();
-		}
-		
-		Utils.getInstance().cleanUp();
+//		Utils.getInstance().setTimeout(()->{
+//			try {
+//				sessionProtocol.stopSession();
+//			} catch (EndpointUnavailable e) {
+//				//ignore...
+//			}
+//		}, 120000);
+//
+//		try {
+//			// just wait for this thread to terminate
+//			endpoint.join();
+//		} catch (InterruptedException e) {
+//			// just make sure the ioThread is going to terminate
+//			endpoint.close();
+//		}
+//		Utils.getInstance().cleanUp();
 	}
-	
+
+
+	@SneakyThrows
+	@Override
+	public void run(){
+		socket=new Socket("127.0.0.1",9999);
+		Endpoint endpoint = new Endpoint(socket,this);
+		//StrategyString = strategyString;
+
+		//初始化连接策略
+		switch (StrategyString) {
+			case SendBlock.strategyName:
+				this.strategy=new SendBlock(this,endpoint);
+				break;
+			case HelloWorld.strategyName:
+				this.strategy=new HelloWorld(this,endpoint);
+				break;
+			default:
+				System.out.println("InvalidStrategy");
+				break;
+			//throw new InvalidMessage();
+
+		}
+		endpoint.start();
+	}
+
 	/**
 	 * The endpoint is ready to use.
 	 * @param endpoint
@@ -107,6 +163,20 @@ public class ClientManager extends Manager {
 		helloWorldProtocol=new HelloWorldProtocol(endpoint,this);
 		try {
 			endpoint.handleProtocol(helloWorldProtocol);
+		} catch (ProtocolAlreadyRunning protocolAlreadyRunning) {
+			protocolAlreadyRunning.printStackTrace();
+		}
+
+		invProtocol = new InvProtocol(endpoint,this);
+		try {
+			endpoint.handleProtocol(invProtocol);
+		} catch (ProtocolAlreadyRunning protocolAlreadyRunning) {
+			protocolAlreadyRunning.printStackTrace();
+		}
+
+		getDataProtocol = new getDataProtocol(endpoint,this);
+		try {
+			endpoint.handleProtocol(getDataProtocol);
 		} catch (ProtocolAlreadyRunning protocolAlreadyRunning) {
 			protocolAlreadyRunning.printStackTrace();
 		}
@@ -191,12 +261,11 @@ public class ClientManager extends Manager {
 
 
 	//这里可以作为抽象的入口，在这里选择到底做什么业务流程。
-	public void VersionStarted(Endpoint endpoint,ConnectionStrategy strategy){
+	public void VersionStarted(){
 		//log.info("version has started with server");
-		this.strategy = strategy;
 		strategy.algorithmMethod();
-
 	}
+
 
 
 	/**

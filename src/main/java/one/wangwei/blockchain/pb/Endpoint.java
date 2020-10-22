@@ -1,13 +1,17 @@
 package one.wangwei.blockchain.pb;
 
+import one.wangwei.blockchain.Net.Inv;
 import one.wangwei.blockchain.pb.protocols.HelloWorld.HelloWorldProtocol;
 import one.wangwei.blockchain.pb.protocols.IRequestReplyProtocol;
+import one.wangwei.blockchain.pb.protocols.Inv.InvProtocol;
 import one.wangwei.blockchain.pb.protocols.InvalidMessage;
 import one.wangwei.blockchain.pb.protocols.Message;
 import one.wangwei.blockchain.pb.protocols.Protocol;
 import one.wangwei.blockchain.pb.protocols.Version.VersionProtocol;
+import one.wangwei.blockchain.pb.protocols.getData.getDataProtocol;
 import one.wangwei.blockchain.pb.protocols.keepalive.KeepAliveProtocol;
 import one.wangwei.blockchain.pb.protocols.session.SessionProtocol;
+import org.apache.commons.codec.DecoderException;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -105,7 +109,7 @@ public class Endpoint extends Thread {
 			protocolNames = new HashSet<String>(protocols.keySet());
 		}
 		if(protocolNames!=null)
-			protocolNames.forEach((protocolName)->{stopProtocol(protocolName);});
+			//protocolNames.forEach((protocolName)->{stopProtocol(protocolName);});
 		interrupt();
 		try {
 			if(out!=null) out.close();
@@ -136,6 +140,7 @@ public class Endpoint extends Thread {
 		//发送了一条消息
 		manager.endpointReady(this);
 		log.info("endpoint has started to: "+getOtherEndpointId());
+		//每次添加protocol需要在这里添加
 		while(!isInterrupted()) {
 			try {
 				String line=in.readUTF();
@@ -162,6 +167,14 @@ public class Endpoint extends Thread {
 					case HelloWorldProtocol.protocolName:
 						protocol=new HelloWorldProtocol(this,manager);
 						break;
+
+					case InvProtocol.protocolName:
+						protocol=new InvProtocol(this,manager);
+						break;
+
+					case getDataProtocol.protocolName:
+						protocol=new getDataProtocol(this,manager);
+						break;
 					}
 					if(!manager.protocolRequested(this,protocol)) {
 						log.info("message dropped due to no protocol available: "+line);
@@ -187,6 +200,8 @@ public class Endpoint extends Thread {
 			}catch (EndpointUnavailable e) {
 				manager.endpointDisconnectedAbruptly(this);
 				break;
+			} catch (DecoderException e) {
+				e.printStackTrace();
 			}
 		}
 		try {

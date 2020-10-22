@@ -22,10 +22,10 @@ public class Main {
         //CLI cli = new CLI(args);
         //cli.parse();
         try {
-            //RocksDBUtils.getInstance().cleanChainStateBucket();
-           // RocksDBUtils.getInstance().cleanBlockBucket();
-            //RocksDBUtils.getInstance().cleanTxBucket();
-            //RocksDBUtils.getInstance().cleanIpBucket();
+//            RocksDBUtils.getInstance().cleanChainStateBucket();
+//            RocksDBUtils.getInstance().cleanBlockBucket();
+//            RocksDBUtils.getInstance().cleanTxBucket();
+//            RocksDBUtils.getInstance().cleanIpBucket();
 
             Server serverThread = new Server();
             CliThread cliThread = new CliThread();
@@ -43,8 +43,8 @@ public class Main {
             //String[] argss = {"printaddresses"};
             //String[] argss = {"getbalance", "-address", "18b76o68gGKg8ndXHDTDWdbG1DkGzMwfvZ"};
 
-            String[] argss = {"send", "-from", "1Gsnure8ovCy3SiK6Fth44kDcwrEHjtFuj", "-to", "1DRDoamPwRDQa1775dVig7X8BitJm1273D", "-amount", "10"};
-            //String[] argss ={"printchain"};
+            //String[] argss = {"send", "-from", "1Gsnure8ovCy3SiK6Fth44kDcwrEHjtFuj", "-to", "1DRDoamPwRDQa1775dVig7X8BitJm1273D", "-amount", "10"};
+            String[] argss ={"printchain"};
             serverThread.start();
             cliThread.start(argss);
 

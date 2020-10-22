@@ -1,5 +1,6 @@
 package one.wangwei.blockchain.pb.server;
 
+import lombok.SneakyThrows;
 import one.wangwei.blockchain.pb.*;
 import one.wangwei.blockchain.pb.protocols.IRequestReplyProtocol;
 import one.wangwei.blockchain.pb.protocols.Protocol;
@@ -31,10 +32,47 @@ public class ServerManager extends Manager {
 	 * @throws IOException whenever the exception is deemed unrecoverable
 	 */
 	public ServerManager(int port) throws IOException {
+//		log.info("initializing");
+//		// when the IO thread terminates, and all endpoints have terminated,
+//		// then the server will terminate
+//		ioThread = new IOThread(port,this);
+//		try {
+//			// just wait for this thread to terminate
+//			ioThread.join();
+//		} catch (InterruptedException e) {
+//			// just make sure the ioThread is going to terminate
+//			ioThread.shutDown();
+//		}
+//		// At this point, there still may be some endpoints that have not
+//		// terminated, and so the JVM will remain running until they do.
+//		// However no new endpoints can be created.
+//
+//		// let's wait for the remaining clients if we can
+//		while(numLiveClients>0) {
+//			log.warning("still waiting for "+numLiveClients+" to finish");
+//			try {
+//				Thread.sleep(10000);
+//			} catch (InterruptedException e) {
+//				if(numLiveClients>0) {
+//					log.severe("terminating server with "+numLiveClients+
+//							" still unfinished");
+//				}
+//				System.exit(-1);
+//			}
+//		}
+//
+//		// there are no live clients, so let's clean up
+//		Utils.getInstance().cleanUp();
+//		log.info("server terminated cleanly");
+	}
+
+	@SneakyThrows
+	@Override
+	public void run(){
 		log.info("initializing");
 		// when the IO thread terminates, and all endpoints have terminated,
 		// then the server will terminate
-		ioThread = new IOThread(port,this);
+		ioThread = new IOThread(9999,this);
 		try {
 			// just wait for this thread to terminate
 			ioThread.join();
@@ -45,7 +83,7 @@ public class ServerManager extends Manager {
 		// At this point, there still may be some endpoints that have not
 		// terminated, and so the JVM will remain running until they do.
 		// However no new endpoints can be created.
-		
+
 		// let's wait for the remaining clients if we can
 		while(numLiveClients>0) {
 			log.warning("still waiting for "+numLiveClients+" to finish");
@@ -59,12 +97,11 @@ public class ServerManager extends Manager {
 				System.exit(-1);
 			}
 		}
-		
+
 		// there are no live clients, so let's clean up
 		Utils.getInstance().cleanUp();
 		log.info("server terminated cleanly");
 	}
-	
 	/**
 	 * A new client has connected to the server. We need to keep
 	 * a set of all clients that have connected, so that we can
@@ -220,4 +257,9 @@ public class ServerManager extends Manager {
 		log.severe("client "+endpoint.getOtherEndpointId()+" has timed out on protocol "+protocol.getProtocolName());
 		endpoint.close();
 	}
+
+	@Override
+	public void VersionStarted(){
+
+	};
 }

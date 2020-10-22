@@ -2,6 +2,7 @@ package one.wangwei.blockchain.pb;
 
 
 import one.wangwei.blockchain.pb.Strategy.ConnectionStrategy;
+import one.wangwei.blockchain.pb.Strategy.HelloWorld;
 import one.wangwei.blockchain.pb.protocols.Protocol;
 
 /**
@@ -12,8 +13,9 @@ import one.wangwei.blockchain.pb.protocols.Protocol;
  * @author aaron
  *
  */
-public class Manager {
-	
+public abstract class Manager extends Thread{
+
+
 	/**
 	 * The endpoint is ready to use.
 	 * @param endpoint
@@ -80,7 +82,7 @@ public class Manager {
 		
 	}
 
-	public void VersionStarted(Endpoint endpoint, ConnectionStrategy strategy) {
+	public void VersionStarted() {
 	}
 
 	public void VersionStopped(Endpoint endpoint) {
@@ -97,6 +99,8 @@ public class Manager {
 	public boolean protocolRequested(Endpoint endpoint, Protocol protocol) {
 		return false;
 	}
+
+
 
 	
 

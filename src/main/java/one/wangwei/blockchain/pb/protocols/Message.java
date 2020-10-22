@@ -2,14 +2,19 @@ package one.wangwei.blockchain.pb.protocols;
 
 import one.wangwei.blockchain.pb.protocols.HelloWorld.HelloWorldReply;
 import one.wangwei.blockchain.pb.protocols.HelloWorld.HelloWorldRequest;
+import one.wangwei.blockchain.pb.protocols.Inv.InvReply;
+import one.wangwei.blockchain.pb.protocols.Inv.InvRequest;
 import one.wangwei.blockchain.pb.protocols.Version.VersionReply;
 import one.wangwei.blockchain.pb.protocols.Version.VersionRequest;
+import one.wangwei.blockchain.pb.protocols.getData.getDataReply;
+import one.wangwei.blockchain.pb.protocols.getData.getDataRequest;
 import one.wangwei.blockchain.pb.protocols.keepalive.KeepAliveReply;
 import one.wangwei.blockchain.pb.protocols.keepalive.KeepAliveRequest;
 import one.wangwei.blockchain.pb.protocols.session.SessionStartReply;
 import one.wangwei.blockchain.pb.protocols.session.SessionStartRequest;
 import one.wangwei.blockchain.pb.protocols.session.SessionStopReply;
 import one.wangwei.blockchain.pb.protocols.session.SessionStopRequest;
+import org.apache.commons.codec.DecoderException;
 
 /**
  * Message super class and factory for all protocol messages, to parse a
@@ -73,7 +78,7 @@ public class Message {
 	 * @return the appropriate message object
 	 * @throws InvalidMessage if no message object matches the message
 	 */
-	static public Message toMessage(String json) throws InvalidMessage {
+	static public Message toMessage(String json) throws InvalidMessage, DecoderException {
 		Document doc = Document.parse(json);
 		// the following test is somewhat repetitive, but it avoids having
 		// to test each message type, handling exceptions for those that are
@@ -92,6 +97,10 @@ public class Message {
 			case VersionReply.name: return new VersionReply(doc);
 			case HelloWorldRequest.name: return new HelloWorldRequest(doc);
 			case HelloWorldReply.name: return new HelloWorldReply(doc);
+			case InvRequest.name: return new InvRequest(doc);
+			case InvReply.name: return new InvReply(doc);
+			case getDataReply.name: return new getDataReply(doc);
+			case getDataRequest.name: return new getDataRequest(doc);
 			// put more message cases here
 
 			// if nothing matches, its invalid

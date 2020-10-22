@@ -308,7 +308,21 @@ public class    RocksDBUtils {
         }
     }
 
+    /**
+     * 查询交易
+     *
+     * @param TxHash
+     * @return
+     */
+    public Transaction getTransacion(byte[] TxHash) {
+        byte[] TxBytes = txBucket.get(TxHash);
+        if (TxBytes != null) {
+            return (Transaction) SerializeUtils.deserialize(TxBytes);
+        }
+        return null;
+        //throw new RuntimeException("Fail to get transaction ! TxHash=" + TxHash);
 
+    }
 
 
 
@@ -343,6 +357,8 @@ public class    RocksDBUtils {
         return null;
         //throw new RuntimeException("Fail to get block ! blockHash=" + blockHash);
     }
+
+
 
 
     /**

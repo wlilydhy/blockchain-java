@@ -1,7 +1,12 @@
 package one.wangwei.blockchain.pb;
 
+import one.wangwei.blockchain.block.Block;
+import one.wangwei.blockchain.pb.Strategy.SendBlock;
+import one.wangwei.blockchain.pb.client.ClientManager;
+import one.wangwei.blockchain.transaction.Transaction;
 import org.apache.commons.cli.*;
 import one.wangwei.blockchain.pb.server.ServerManager;
+import org.apache.commons.codec.DecoderException;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -27,8 +32,7 @@ public class Server {
 		System.exit(-1);
 	}
 	
-	public static void main( String[] args ) throws IOException
-    {
+	public static void main( String[] args ) throws IOException, DecoderException {
     	// set a nice log format
 		System.setProperty("java.util.logging.SimpleFormatter.format",
                 "[%1$tl:%1$tM:%1$tS:%1$tL] %2$s %4$s: %5$s%n");
@@ -61,7 +65,16 @@ public class Server {
         
         // the server manager will start an io thread and this will prevent
         // the JVM from terminating
-        new ServerManager(9999);
+       new ServerManager(9999);
+
+		ServerManager serverManager = new ServerManager(9999);
+
+
+		ClientManager clientManager = new ClientManager("127.0.0.1",9999,SendBlock.strategyName);
+		serverManager.start();
+		clientManager.start();
+		//block to string youdianwenti
+
         
     }
 }

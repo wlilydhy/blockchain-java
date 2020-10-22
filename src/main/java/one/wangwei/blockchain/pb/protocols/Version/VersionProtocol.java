@@ -1,9 +1,12 @@
 package one.wangwei.blockchain.pb.protocols.Version;
 
+import one.wangwei.blockchain.block.Block;
 import one.wangwei.blockchain.pb.Endpoint;
 import one.wangwei.blockchain.pb.EndpointUnavailable;
 import one.wangwei.blockchain.pb.Manager;
+import one.wangwei.blockchain.pb.Strategy.ConnectionStrategy;
 import one.wangwei.blockchain.pb.Strategy.HelloWorld;
+import one.wangwei.blockchain.pb.Strategy.SendBlock;
 import one.wangwei.blockchain.pb.client.ClientManager;
 import one.wangwei.blockchain.pb.protocols.*;
 import one.wangwei.blockchain.pb.protocols.keepalive.KeepAliveProtocol;
@@ -83,14 +86,17 @@ public class VersionProtocol extends Protocol implements IRequestReplyProtocol {
         //接下来是调用环节了
         if(msg instanceof VersionReply) {
             String version = ((VersionReply) msg).getVersion();
-            //System.out.println("version"+version);
+            //对比version
+
             //getBlockCount
             Integer BlockCount = 0;
             if(BlockCount<((VersionReply) msg).getBlockCount()){
                 //调用下载区块的模块
             }
-            //下一层
-            manager.VersionStarted(endpoint,new HelloWorld((ClientManager) manager,endpoint));
+            //下一层(选择策略)
+            //ConnectionStrategy strategy = new HelloWorld((ClientManager)manager,endpoint);
+            //ConnectionStrategy strategy = new SendBlock((ClientManager)manager,endpoint);
+            manager.VersionStarted();
 
         }
 

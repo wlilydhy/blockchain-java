@@ -1,5 +1,6 @@
 package one.wangwei.blockchain.pb.protocols;
 
+import com.google.common.primitives.Bytes;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -83,6 +84,11 @@ public class Document {
 	public void append(String key,int val){
 		obj.put(key, Integer.valueOf(val));
 	}
+
+
+	//public void append(String key,byte[] bytes){obj.put(key, Bytes.asList(bytes));}
+	public void append(String key,byte[] bytes){obj.put(key, bytes);}
+
 	
 	public String toJson(){
 		return obj.toJSONString();

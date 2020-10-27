@@ -16,9 +16,9 @@ public class CliThread extends Thread{
         CLI cli = new CLI(args);
         cli.parse();
         //SHOW SOMETHING
-        Map<byte[],byte[]> txbucket = RocksDBUtils.getInstance().getTxBucket();
+        Map<String,byte[]> txbucket = RocksDBUtils.getInstance().getTxBucket();
         System.out.println("txbucket's size is"+txbucket.size());
-        Iterator<Map.Entry<byte[],byte[]>> iterator = txbucket.entrySet().iterator();
+        Iterator<Map.Entry<String,byte[]>> iterator = txbucket.entrySet().iterator();
         while(iterator.hasNext()) {
             Transaction transaction = (Transaction) SerializeUtils.deserialize(iterator.next().getValue());
             System.out.println(transaction.toString());

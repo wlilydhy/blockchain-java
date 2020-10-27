@@ -70,8 +70,8 @@ public class Client {
     public static boolean Invoker(BufferedWriter bufferedWriter,BufferedReader bufferedReader,String name) throws IOException, DecoderException {
         if(name.equals("getTxdata")){
             String id = receiveMsg(bufferedReader);
-            byte[] bytes = Hex.decodeHex(id);
-            Transaction t1=serchTransaction(bytes);
+            //byte[] bytes = Hex.decodeHex(id);
+            Transaction t1=serchTransaction(id);
             sendTx(bufferedWriter, t1);
             return true;
         }
@@ -254,17 +254,17 @@ public class Client {
      * @param Txid
      * @return
      */
-    public static Transaction serchTransaction(byte[] Txid){
-        Map<byte[],byte[]> txBucket = RocksDBUtils.getInstance().getTxBucket();
+    public static Transaction serchTransaction(String Txid){
+        Map<String,byte[]> txBucket = RocksDBUtils.getInstance().getTxBucket();
         //RocksDBUtils.getInstance().closeDB();
-        Iterator<Map.Entry<byte[],byte[]>> iterator = txBucket.entrySet().iterator();
+        Iterator<Map.Entry<String,byte[]>> iterator = txBucket.entrySet().iterator();
         if(!iterator.hasNext()){
             log.info("Txbucket is empty");
         }
         while(iterator.hasNext()){
-            Map.Entry<byte[], byte[]> entry = iterator.next();
-            byte[] id = entry.getKey();
-            if(byteEqual(id,Txid)){
+            Map.Entry<String, byte[]> entry = iterator.next();
+            String id = entry.getKey();
+            if(id.equals(Txid)){
                return (Transaction) SerializeUtils.deserialize(entry.getValue());
             }
         }

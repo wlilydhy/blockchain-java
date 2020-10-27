@@ -91,7 +91,8 @@ public class    RocksDBUtils {
     private Map<String, Integer> ipBucket;
 
     @Getter
-    private Map<byte[], byte[]> txBucket;
+    private Map<String, byte[]> txBucket;
+
 
 
     private RocksDBUtils() {
@@ -298,13 +299,13 @@ public class    RocksDBUtils {
      */
     public void putTransaction(Transaction transaction) {
         try {
-            txBucket.put(transaction.getTxId(), SerializeUtils.serialize(transaction));
+            txBucket.put(transaction.getStringOfTxid(), SerializeUtils.serialize(transaction));
             db.put(SerializeUtils.serialize(Tx_BUCKET_KEY), SerializeUtils.serialize(txBucket));
             //this.closeDB();
             log.info("putting transaction is done");
         } catch (RocksDBException e) {
-            log.error("Fail to put block ! block=" + transaction.toString(), e);
-            throw new RuntimeException("Fail to put block ! block=" + transaction.toString(), e);
+            log.error("Fail to put Transaction ! Transaction=" + transaction.toString(), e);
+            throw new RuntimeException("Fail to put Transaction ! Transaction=" + transaction.toString(), e);
         }
     }
 
@@ -314,7 +315,7 @@ public class    RocksDBUtils {
      * @param TxHash
      * @return
      */
-    public Transaction getTransacion(byte[] TxHash) {
+    public Transaction getTransacion(String TxHash) {
         byte[] TxBytes = txBucket.get(TxHash);
         if (TxBytes != null) {
             return (Transaction) SerializeUtils.deserialize(TxBytes);
@@ -493,7 +494,7 @@ public class    RocksDBUtils {
      *
      * @param Txid 交易ID
      */
-    public void deletetransacion(byte[] Txid) {
+    public void deletetransacion(String Txid) {
         try {
             txBucket.remove(Txid);
             db.put(SerializeUtils.serialize(Tx_BUCKET_KEY), SerializeUtils.serialize(txBucket));

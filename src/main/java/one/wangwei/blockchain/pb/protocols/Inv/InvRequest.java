@@ -12,7 +12,7 @@ public class InvRequest extends Message{
     static final public String name = "InvRequest";
     private String RequestType;
     private String BlockHash;
-    private byte[] TxHash;
+    private String TxHash;
 
 
     /**
@@ -37,8 +37,8 @@ public class InvRequest extends Message{
         if((doc.get("RequestType")).equals("Block")) {
             this.BlockHash = (String) doc.get("Hash");
         }
-        else if((doc.get("RequestType")).equals("Block")){
-            this.TxHash=(byte[])doc.get("Hash");
+        else if((doc.get("RequestType")).equals("Transaction")){
+            this.TxHash=(String) doc.get("Hash");
         }
     }
 }

@@ -29,6 +29,7 @@ import java.security.PublicKey;
 import java.security.Security;
 import java.security.Signature;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -62,6 +63,10 @@ public class Transaction {
      * 创建日期
      */
     private long createTime;
+    /**
+     *String类型的TxId
+     */
+    private String StringOfTxid;
 
     /**
      * 计算交易信息的Hash值
@@ -93,9 +98,10 @@ public class Transaction {
         TXOutput txOutput = TXOutput.newTXOutput(SUBSIDY, to);
         // 创建交易
         Transaction tx = new Transaction(null, new TXInput[]{txInput},
-                new TXOutput[]{txOutput}, System.currentTimeMillis());
+                new TXOutput[]{txOutput}, System.currentTimeMillis(),null);
         // 设置交易ID
         tx.setTxId(tx.hash());
+        tx.setStringOfTxid(Base64.getEncoder().encodeToString(tx.TxId));
         return tx;
     }
 
@@ -153,7 +159,7 @@ public class Transaction {
             txOutput = ArrayUtils.add(txOutput, TXOutput.newTXOutput((accumulated - amount), from));
         }
 
-        Transaction newTx = new Transaction(null, txInputs, txOutput, System.currentTimeMillis());
+        Transaction newTx = new Transaction(null, txInputs, txOutput, System.currentTimeMillis(),null);
         newTx.setTxId(newTx.hash());
 
         // 进行交易签名
@@ -181,7 +187,7 @@ public class Transaction {
             tmpTXOutputs[i] = new TXOutput(txOutput.getValue(), txOutput.getPubKeyHash());
         }
 
-        return new Transaction(this.getTxId(), tmpTXInputs, tmpTXOutputs, this.getCreateTime());
+        return new Transaction(this.getTxId(), tmpTXInputs, tmpTXOutputs, this.getCreateTime(),this.getStringOfTxid());
     }
 
 

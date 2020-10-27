@@ -70,6 +70,7 @@ public class Message {
 		validateStringValue("name",name,doc);
 		validateStringValue("protocolName",protocolName,doc);
 		validateStringValue("type",type.toString(),doc);
+		//this.doc=doc;
 	}
 
 	/**

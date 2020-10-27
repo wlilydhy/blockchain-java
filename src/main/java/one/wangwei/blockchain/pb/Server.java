@@ -2,6 +2,7 @@ package one.wangwei.blockchain.pb;
 
 import one.wangwei.blockchain.block.Block;
 import one.wangwei.blockchain.pb.Strategy.SendBlock;
+import one.wangwei.blockchain.pb.Strategy.SendTransaction;
 import one.wangwei.blockchain.pb.client.ClientManager;
 import one.wangwei.blockchain.transaction.Transaction;
 import org.apache.commons.cli.*;
@@ -65,15 +66,11 @@ public class Server {
         
         // the server manager will start an io thread and this will prevent
         // the JVM from terminating
-       new ServerManager(9999);
-
+       	new ServerManager(9999);
 		ServerManager serverManager = new ServerManager(9999);
-
-
-		ClientManager clientManager = new ClientManager("127.0.0.1",9999,SendBlock.strategyName);
+		ClientManager clientManager = new ClientManager("127.0.0.1",9999, SendTransaction.strategyName);
 		serverManager.start();
 		clientManager.start();
-		//block to string youdianwenti
 
         
     }

@@ -133,15 +133,15 @@ public class CLI {
 
     private void mineblock(String address) throws IOException, DecoderException {
         int maxcount=50;
-        Map<byte[],byte[]> txbucket = RocksDBUtils.getInstance().getTxBucket();
+        Map<String,byte[]> txbucket = RocksDBUtils.getInstance().getTxBucket();
         //System.out.println("txbucket's size is"+txbucket.size());
         maxcount = Math.min(txbucket.size(),maxcount);
-        Iterator<Map.Entry<byte[],byte[]>> iterator = txbucket.entrySet().iterator();
+        Iterator<Map.Entry<String,byte[]>> iterator = txbucket.entrySet().iterator();
         Blockchain blockchain= new Blockchain(RocksDBUtils.getInstance().getLastBlockHash());
         Transaction transactions[] = new Transaction[maxcount+1];
         int count=0;
         while(iterator.hasNext()) {
-            Map.Entry<byte[], byte[]> entry = iterator.next();
+            Map.Entry<String, byte[]> entry = iterator.next();
             byte[] transactionByte = entry.getValue();
             transactions[count]= (Transaction) SerializeUtils.deserialize(transactionByte);
             RocksDBUtils.getInstance().deletetransacion(entry.getKey());

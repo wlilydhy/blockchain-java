@@ -6,10 +6,7 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import one.wangwei.blockchain.Net.Inv;
 import one.wangwei.blockchain.pb.*;
-import one.wangwei.blockchain.pb.Strategy.ConnectionStrategy;
-import one.wangwei.blockchain.pb.Strategy.HelloWorld;
-import one.wangwei.blockchain.pb.Strategy.InvalidStrategy;
-import one.wangwei.blockchain.pb.Strategy.SendBlock;
+import one.wangwei.blockchain.pb.Strategy.*;
 import one.wangwei.blockchain.pb.protocols.HelloWorld.HelloWorldProtocol;
 import one.wangwei.blockchain.pb.protocols.IRequestReplyProtocol;
 import one.wangwei.blockchain.pb.protocols.Inv.InvProtocol;
@@ -110,6 +107,9 @@ public class ClientManager extends Manager {
 				break;
 			case HelloWorld.strategyName:
 				this.strategy=new HelloWorld(this,endpoint);
+				break;
+			case SendTransaction.strategyName:
+				this.strategy=new SendTransaction(this,endpoint);
 				break;
 			default:
 				System.out.println("InvalidStrategy");

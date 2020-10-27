@@ -15,6 +15,7 @@ import one.wangwei.blockchain.store.RocksDBUtils;
 import one.wangwei.blockchain.transaction.Transaction;
 
 
+import javax.management.relation.InvalidRelationIdException;
 import java.util.logging.Logger;
 
 @Setter
@@ -24,7 +25,7 @@ public class InvProtocol extends Protocol implements IRequestReplyProtocol {
     private boolean protocolStop = false;
     private String RequestType;
     private String ReplyType;
-    private byte[] TransactionHash;
+    private String TransactionHash;
     private String BlockHash;
 
     public static final String protocolName = "InvProtocol";
@@ -62,19 +63,19 @@ public class InvProtocol extends Protocol implements IRequestReplyProtocol {
         doc.append("protocolName", protocolName);
         doc.append("type", Message.Type.Request.toString());
         doc.append("RequestType",RequestType);
-        if(RequestType=="Block") {
+        if(RequestType.equals("Block")) {
             doc.append("Hash", BlockHash);
         }
-        else if(RequestType=="Transaction"){
+        else if(RequestType.equals("Transaction")){
             doc.append("Hash",TransactionHash);
         }
         try {
-            sendRequest(new InvRequest(doc));
+            InvRequest invRequest=new InvRequest(doc);
+            //System.out.println("funk  "+invRequest.getTxHash());
+            sendRequest(invRequest);
         } catch (InvalidMessage invalidMessage) {
             invalidMessage.printStackTrace();
         }
-
-
     }
 
     @Override
@@ -123,7 +124,7 @@ public class InvProtocol extends Protocol implements IRequestReplyProtocol {
             }
 
             if(requestType.equals("Transaction")){
-                byte[] TxHash = ((InvRequest) msg).getTxHash();
+                String TxHash = ((InvRequest) msg).getTxHash();
                 //检查是否在数据库中已经存在了该区块
                 Transaction transaction = RocksDBUtils.getInstance().getTransacion(TxHash);
                 //如果存在就告诉对方已经存在

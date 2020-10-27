@@ -73,7 +73,7 @@ public class Server extends Thread{
             if (inv.getCategory().equals("transaction")) {
                 byte[] tid = inv.getData()[0];
                 String id = Hex.encodeHexString(tid);
-                Transaction transaction1 = serchTransaction(tid);
+                Transaction transaction1 = null;//serchTransaction(tid);
                 if( transaction1!=null){
                     log.info("Transaction is existed \n"+transaction1.toString());
                     sendMsg(bufferedWriter,"goodnight");
@@ -343,23 +343,23 @@ public class Server extends Thread{
      * @param Txid
      * @return
      */
-    public Transaction serchTransaction(byte[] Txid){
-        Map<byte[],byte[]> txBucket = RocksDBUtils.getInstance().getTxBucket();
-        //RocksDBUtils.getInstance().closeDB();
-        Iterator<Map.Entry<byte[],byte[]>> iterator = txBucket.entrySet().iterator();
-        if(!iterator.hasNext()){
-            log.info("Txbucket is empty");
-        }
-        while(iterator.hasNext()){
-            Map.Entry<byte[], byte[]> entry = iterator.next();
-            byte[] id = entry.getKey();
-            if(byteEqual(id,Txid)){
-                return (Transaction) SerializeUtils.deserialize(entry.getValue());
-            }
-        }
-        log.info("can not find the transaction by txid");
-        return null;
-    }
+//    public Transaction serchTransaction(byte[] Txid){
+//        Map<byte[],byte[]> txBucket = RocksDBUtils.getInstance().getTxBucket();
+//        //RocksDBUtils.getInstance().closeDB();
+//        Iterator<Map.Entry<byte[],byte[]>> iterator = txBucket.entrySet().iterator();
+//        if(!iterator.hasNext()){
+//            log.info("Txbucket is empty");
+//        }
+//        while(iterator.hasNext()){
+//            Map.Entry<byte[], byte[]> entry = iterator.next();
+//            byte[] id = entry.getKey();
+//            if(byteEqual(id,Txid)){
+//                return (Transaction) SerializeUtils.deserialize(entry.getValue());
+//            }
+//        }
+//        log.info("can not find the transaction by txid");
+//        return null;
+//    }
 
     private boolean byteEqual(byte[] a ,byte[] b){
         if(a.length==b.length){

@@ -22,7 +22,7 @@ public class getDataProtocol extends Protocol implements IRequestReplyProtocol {
     private boolean protocolStop = false;
     private String RequestType;
     private String ReplyType;
-    private byte[] TransactionHash;
+    private String TransactionHash;
     private String BlockHash;
 
     /**
@@ -136,7 +136,7 @@ public class getDataProtocol extends Protocol implements IRequestReplyProtocol {
             }
             if(((getDataRequest) msg).getRequestType().equals("Transaction")){
                 //向数据库查找该交易
-                byte[] TxHash=((getDataRequest) msg).getTxHash();
+                String TxHash=((getDataRequest) msg).getTxHash();
                 Transaction transaction= RocksDBUtils.getInstance().getTransacion(TxHash);
                 String str = Utils.getInstance().TxToString(transaction);
                 //序列化后写入消息

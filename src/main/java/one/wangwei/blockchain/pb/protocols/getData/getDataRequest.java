@@ -11,7 +11,7 @@ public class getDataRequest extends Message {
     static final public String name = "getDataRequest";
     private String RequestType;
     private String BlockHash;
-    private byte[] TxHash;
+    private String TxHash;
 
     /**
      * Initialiser when given message parameters explicitly. Note that
@@ -36,7 +36,7 @@ public class getDataRequest extends Message {
             this.BlockHash=(String)doc.get("Hash");
         }
         else if(RequestType.equals("Transaction")){
-            this.TxHash=(byte[])doc.get("Hash");
+            this.TxHash=(String) doc.get("Hash");
         }
     }
 }

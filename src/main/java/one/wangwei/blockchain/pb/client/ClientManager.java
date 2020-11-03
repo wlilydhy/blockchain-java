@@ -12,6 +12,7 @@ import one.wangwei.blockchain.pb.protocols.IRequestReplyProtocol;
 import one.wangwei.blockchain.pb.protocols.Inv.InvProtocol;
 import one.wangwei.blockchain.pb.protocols.InvalidMessage;
 import one.wangwei.blockchain.pb.protocols.Protocol;
+import one.wangwei.blockchain.pb.protocols.SearchTransaction.SearchTransactionProtocol;
 import one.wangwei.blockchain.pb.protocols.Version.VersionProtocol;
 import one.wangwei.blockchain.pb.protocols.getData.getDataProtocol;
 import one.wangwei.blockchain.pb.protocols.keepalive.KeepAliveProtocol;
@@ -43,6 +44,7 @@ public class ClientManager extends Manager {
 	private HelloWorldProtocol helloWorldProtocol;
 	private InvProtocol invProtocol;
 	private getDataProtocol getDataProtocol;
+	private SearchTransactionProtocol searchTransactionProtocol;
 	private Socket socket;
 	private ConnectionStrategy strategy;
 	private String StrategyString;
@@ -111,7 +113,9 @@ public class ClientManager extends Manager {
 			case SendTransaction.strategyName:
 				this.strategy=new SendTransaction(this,endpoint);
 				break;
-
+			case SearchTransaction.strategyName:
+				this.strategy=new SearchTransaction(this,endpoint);
+				break;
 			default:
 				System.out.println("InvalidStrategy");
 				break;
@@ -123,13 +127,13 @@ public class ClientManager extends Manager {
 
 	/**
 	 * The endpoint is ready to use.
+	 * 每次新建protocol都要在这里添加
 	 * @param endpoint
 	 */
 	@Override
-	//每次新建protocol都要在这里添加
 	public void endpointReady(Endpoint endpoint) {
 		log.info("connection with server established");
-		//sessionprotocol导入并初始化
+		//suppressionProtocol导入并初始化
 		sessionProtocol = new SessionProtocol(endpoint,this);
 		try {
 			// we need to add it to the endpoint before starting it
@@ -182,12 +186,20 @@ public class ClientManager extends Manager {
 			protocolAlreadyRunning.printStackTrace();
 		}
 
+		searchTransactionProtocol = new SearchTransactionProtocol(endpoint,this);
+		try {
+			endpoint.handleProtocol(searchTransactionProtocol);
+		} catch (ProtocolAlreadyRunning protocolAlreadyRunning) {
+			protocolAlreadyRunning.printStackTrace();
+		}
+
 	}
 	
 	/**
 	 * The endpoint close() method has been called and completed.
 	 * @param endpoint
 	 */
+	@Override
 	public void endpointClosed(Endpoint endpoint) {
 		log.info("connection with server terminated");
 	}
@@ -262,6 +274,7 @@ public class ClientManager extends Manager {
 
 
 	//这里可以作为抽象的入口，在这里选择到底做什么业务流程。
+	@Override
 	public void VersionStarted(){
 		//log.info("version has started with server");
 		strategy.algorithmMethod();

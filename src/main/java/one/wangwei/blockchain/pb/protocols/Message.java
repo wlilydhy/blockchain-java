@@ -4,6 +4,8 @@ import one.wangwei.blockchain.pb.protocols.HelloWorld.HelloWorldReply;
 import one.wangwei.blockchain.pb.protocols.HelloWorld.HelloWorldRequest;
 import one.wangwei.blockchain.pb.protocols.Inv.InvReply;
 import one.wangwei.blockchain.pb.protocols.Inv.InvRequest;
+import one.wangwei.blockchain.pb.protocols.SearchTransaction.SearchTransactionReply;
+import one.wangwei.blockchain.pb.protocols.SearchTransaction.SearchTransactionRequest;
 import one.wangwei.blockchain.pb.protocols.Version.VersionReply;
 import one.wangwei.blockchain.pb.protocols.Version.VersionRequest;
 import one.wangwei.blockchain.pb.protocols.getData.getDataReply;
@@ -102,7 +104,8 @@ public class Message {
 			case InvReply.name: return new InvReply(doc);
 			case getDataReply.name: return new getDataReply(doc);
 			case getDataRequest.name: return new getDataRequest(doc);
-
+			case SearchTransactionReply.name: return new SearchTransactionReply(doc);
+			case SearchTransactionRequest.name:return new SearchTransactionRequest(doc);
 			// put more message cases here
 
 			// if nothing matches, its invalid

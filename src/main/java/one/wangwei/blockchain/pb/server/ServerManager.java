@@ -142,6 +142,7 @@ public class ServerManager extends Manager {
 	 * The endpoint close() method has been called and completed.
 	 * @param endpoint
 	 */
+	@Override
 	public void endpointClosed(Endpoint endpoint) {
 		synchronized(numLiveClients) {
 			numLiveClients--;

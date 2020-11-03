@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 @Setter
 public class InvProtocol extends Protocol implements IRequestReplyProtocol {
 
-    private static Logger log = Logger.getLogger(KeepAliveProtocol.class.getName());
+    private static Logger log = Logger.getLogger(InvProtocol.class.getName());
     private boolean protocolStop = false;
     private String RequestType;
     private String ReplyType;

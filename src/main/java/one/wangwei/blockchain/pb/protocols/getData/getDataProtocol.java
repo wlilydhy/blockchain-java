@@ -55,7 +55,7 @@ public class getDataProtocol extends Protocol implements IRequestReplyProtocol {
     public void stopProtocol() {
         log.severe("protocol stopped while it is still underway");
         protocolStop = true;
-        //endpoint.close();
+        manager.sessionStopped(endpoint);
     }
 
 
@@ -100,11 +100,14 @@ public class getDataProtocol extends Protocol implements IRequestReplyProtocol {
                 Block block=((getDataReply) msg).getBlock();
                 RocksDBUtils.getInstance().putBlock(block);
                 log.info("block is received\n"+block.toString());
+                stopProtocol();
+
             }
             if(((getDataReply) msg).getReplyType().equals("Transaction")) {
                 Transaction transaction = ((getDataReply) msg).getTransaction();
                 RocksDBUtils.getInstance().putTransaction(transaction);
                 log.info("transaction is received\n" + transaction.toString());
+                stopProtocol();
             }
         }
 

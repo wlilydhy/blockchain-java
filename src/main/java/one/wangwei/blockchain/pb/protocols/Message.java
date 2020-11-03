@@ -102,6 +102,7 @@ public class Message {
 			case InvReply.name: return new InvReply(doc);
 			case getDataReply.name: return new getDataReply(doc);
 			case getDataRequest.name: return new getDataRequest(doc);
+
 			// put more message cases here
 
 			// if nothing matches, its invalid

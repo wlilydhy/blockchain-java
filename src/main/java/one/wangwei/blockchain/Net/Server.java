@@ -338,28 +338,7 @@ public class Server extends Thread{
         sendMsg(bufferedWriter,str);
     }
 
-    /**
-     * 查找并返回指定的交易，如果不存在返回null
-     * @param Txid
-     * @return
-     */
-//    public Transaction serchTransaction(byte[] Txid){
-//        Map<byte[],byte[]> txBucket = RocksDBUtils.getInstance().getTxBucket();
-//        //RocksDBUtils.getInstance().closeDB();
-//        Iterator<Map.Entry<byte[],byte[]>> iterator = txBucket.entrySet().iterator();
-//        if(!iterator.hasNext()){
-//            log.info("Txbucket is empty");
-//        }
-//        while(iterator.hasNext()){
-//            Map.Entry<byte[], byte[]> entry = iterator.next();
-//            byte[] id = entry.getKey();
-//            if(byteEqual(id,Txid)){
-//                return (Transaction) SerializeUtils.deserialize(entry.getValue());
-//            }
-//        }
-//        log.info("can not find the transaction by txid");
-//        return null;
-//    }
+
 
     private boolean byteEqual(byte[] a ,byte[] b){
         if(a.length==b.length){

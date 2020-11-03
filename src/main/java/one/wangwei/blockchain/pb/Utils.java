@@ -2,13 +2,18 @@ package one.wangwei.blockchain.pb;
 
 import one.wangwei.blockchain.block.Block;
 import one.wangwei.blockchain.pb.protocols.ICallback;
+import one.wangwei.blockchain.pb.protocols.Inv.InvProtocol;
+import one.wangwei.blockchain.store.RocksDBUtils;
 import one.wangwei.blockchain.transaction.Transaction;
 import one.wangwei.blockchain.util.SerializeUtils;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Logger;
 
 /**
  * A singleton class to provide various utility functions. It must always be
@@ -18,6 +23,8 @@ import java.util.TimerTask;
  *
  */
 public class Utils {
+
+	private static Logger log = Logger.getLogger(Utils.class.getName());
 	private static Utils utils;
 	
 	/**
@@ -98,4 +105,27 @@ public class Utils {
 		Transaction transaction = (Transaction) SerializeUtils.deserialize(sre);
 		return transaction;
 	}
+	/**
+	 * 查找并返回指定的交易，如果不存在返回null
+	 * @param Txid
+	 * @return
+	 */
+	public Transaction searchTransaction(String Txid){
+		Map<String,byte[]> txBucket = RocksDBUtils.getInstance().getTxBucket();
+		//RocksDBUtils.getInstance().closeDB();
+		Iterator<Map.Entry<String,byte[]>> iterator = txBucket.entrySet().iterator();
+		if(!iterator.hasNext()){
+			log.info("Txbucket is empty");
+		}
+		while(iterator.hasNext()){
+			Map.Entry<String, byte[]> entry = iterator.next();
+			String id = entry.getKey();
+			if(id.equals(Txid)){
+				return (Transaction) SerializeUtils.deserialize(entry.getValue());
+			}
+		}
+		log.info("can not find the transaction by txid");
+		return null;
+	}
+
 }

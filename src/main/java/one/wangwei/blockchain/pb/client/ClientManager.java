@@ -111,6 +111,7 @@ public class ClientManager extends Manager {
 			case SendTransaction.strategyName:
 				this.strategy=new SendTransaction(this,endpoint);
 				break;
+
 			default:
 				System.out.println("InvalidStrategy");
 				break;

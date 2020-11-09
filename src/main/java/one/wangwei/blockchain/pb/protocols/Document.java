@@ -86,7 +86,6 @@ public class Document {
 	}
 
 
-	//public void append(String key,byte[] bytes){obj.put(key, Bytes.asList(bytes));}
 	public void append(String key,byte[] bytes){obj.put(key, bytes);}
 
 	
@@ -95,7 +94,7 @@ public class Document {
 	}
 	
 	public static Document parse(String json) {
-		JSONParser parser = new JSONParser();
+		JSONParser parser  = new JSONParser();
 		try {
 			JSONObject obj  = (JSONObject) parser.parse(json);
 			return new Document(obj);

@@ -112,20 +112,51 @@ public class Utils {
 	 */
 	public Transaction searchTransaction(String Txid){
 		Map<String,byte[]> txBucket = RocksDBUtils.getInstance().getTxBucket();
-		//RocksDBUtils.getInstance().closeDB();
-		Iterator<Map.Entry<String,byte[]>> iterator = txBucket.entrySet().iterator();
+		byte[] bytes=txBucket.get(Txid);
+		Transaction transaction = (Transaction) SerializeUtils.deserialize(bytes);
+		return transaction;
+//		Iterator<Map.Entry<String,byte[]>> iterator = txBucket.entrySet().iterator();
+//		if(!iterator.hasNext()){
+//			log.info("Txbucket is empty");
+//		}
+//		while(iterator.hasNext()){
+//			Map.Entry<String, byte[]> entry = iterator.next();
+//			String id = entry.getKey();
+//			if(id.equals(Txid)){
+//				return (Transaction) SerializeUtils.deserialize(entry.getValue());
+//			}
+//		}
+//		log.info("can not find the transaction by txid");
+//		return null;
+	}
+
+	/**
+	 * 从区块链中查找交易
+	 * @param txid
+	 * @return
+	 */
+
+	public Transaction findTransaction(String txid){
+		Map<String,byte[]> blockBucket = RocksDBUtils.getInstance().getBlocksBucket();
+		Iterator<Map.Entry<String,byte[]>> iterator = blockBucket.entrySet().iterator();
 		if(!iterator.hasNext()){
-			log.info("Txbucket is empty");
+			log.info("blockBucket is empty");
 		}
 		while(iterator.hasNext()){
 			Map.Entry<String, byte[]> entry = iterator.next();
-			String id = entry.getKey();
-			if(id.equals(Txid)){
-				return (Transaction) SerializeUtils.deserialize(entry.getValue());
+			byte[] blockBytes = entry.getValue();
+			Block block =(Block)SerializeUtils.deserialize(blockBytes);
+			Transaction[] transactions=block.getTransactions();
+			for(Transaction t : transactions){
+				if(t.getStringOfTxid().equals(txid)){
+					return (Transaction) SerializeUtils.deserialize(entry.getValue());
+				}
 			}
 		}
-		log.info("can not find the transaction by txid");
 		return null;
-	}
+ 	}
+
+
+
 
 }

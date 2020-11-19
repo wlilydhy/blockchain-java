@@ -100,14 +100,14 @@ public class getDataProtocol extends Protocol implements IRequestReplyProtocol {
                 Block block=((getDataReply) msg).getBlock();
                 RocksDBUtils.getInstance().putBlock(block);
                 log.info("block is received\n"+block.toString());
-                stopProtocol();
+                return;
 
             }
             if(((getDataReply) msg).getReplyType().equals("Transaction")) {
                 Transaction transaction = ((getDataReply) msg).getTransaction();
                 RocksDBUtils.getInstance().putTransaction(transaction);
                 log.info("transaction is received\n" + transaction.toString());
-                stopProtocol();
+                return;
             }
         }
 

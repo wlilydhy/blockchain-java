@@ -46,6 +46,11 @@ public class Block {
     private long nonce;
 
     /**
+     * MerkleTree
+     */
+    private MerkleTree merkleTree;
+
+    /**
      * <p> 创建创世区块 </p>
      *
      * @param coinbase
@@ -64,7 +69,7 @@ public class Block {
      * @return
      */
     public static Block newBlock(String previousHash, Transaction[] transactions) {
-        Block block = new Block("", previousHash, transactions, Instant.now().getEpochSecond(), 0);
+        Block block = new Block("", previousHash, transactions, Instant.now().getEpochSecond(), 0,null);
         ProofOfWork pow = ProofOfWork.newProofOfWork(block);
         PowResult powResult = pow.run();
         block.setHash(powResult.getHash());
@@ -74,15 +79,18 @@ public class Block {
 
     /**
      * 对区块中的交易信息进行Hash计算
-     *
+     * MerkleTree的根哈希值
      * @return
      */
-    //MerkleTree的根哈希值
     public byte[] hashTransaction() {
         byte[][] txIdArrays = new byte[this.getTransactions().length][];
         for (int i = 0; i < this.getTransactions().length; i++) {
             txIdArrays[i] = this.getTransactions()[i].hash();
         }
-        return new MerkleTree(txIdArrays).getRoot().getHash();
+        this.merkleTree = new MerkleTree(txIdArrays);
+        return merkleTree.getRoot().getHash();
     }
+
+
+
 }

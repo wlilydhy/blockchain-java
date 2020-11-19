@@ -9,10 +9,7 @@ import one.wangwei.blockchain.util.SerializeUtils;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -105,6 +102,18 @@ public class Utils {
 		Transaction transaction = (Transaction) SerializeUtils.deserialize(sre);
 		return transaction;
 	}
+
+	public String listToString(List<String> list) throws DecoderException {
+		byte[] sre = SerializeUtils.serialize(list);
+		String str = Hex.encodeHexString(sre);
+		return str;
+	}
+
+	public List<String> stringToList(String str) throws DecoderException {
+		byte[] sre = Hex.decodeHex(str);
+		List<String> list = (List<String>) SerializeUtils.deserialize(sre);
+		return list;
+	}
 	/**
 	 * 查找并返回指定的交易，如果不存在返回null
 	 * @param Txid
@@ -149,7 +158,7 @@ public class Utils {
 			Transaction[] transactions=block.getTransactions();
 			for(Transaction t : transactions){
 				if(t.getStringOfTxid().equals(txid)){
-					return (Transaction) SerializeUtils.deserialize(entry.getValue());
+					return t;
 				}
 			}
 		}

@@ -7,6 +7,7 @@ import lombok.SneakyThrows;
 import one.wangwei.blockchain.Net.Inv;
 import one.wangwei.blockchain.pb.*;
 import one.wangwei.blockchain.pb.Strategy.*;
+import one.wangwei.blockchain.pb.protocols.DownloadBlocks.DownloadBlocksProtocol;
 import one.wangwei.blockchain.pb.protocols.HelloWorld.HelloWorldProtocol;
 import one.wangwei.blockchain.pb.protocols.IRequestReplyProtocol;
 import one.wangwei.blockchain.pb.protocols.Inv.InvProtocol;
@@ -45,6 +46,7 @@ public class ClientManager extends Manager {
 	private InvProtocol invProtocol;
 	private getDataProtocol getDataProtocol;
 	private SearchTransactionProtocol searchTransactionProtocol;
+	private DownloadBlocksProtocol downloadBlocksProtocol;
 	private Socket socket;
 	private ConnectionStrategy strategy;
 	private String StrategyString;
@@ -103,6 +105,7 @@ public class ClientManager extends Manager {
 		//StrategyString = strategyString;
 
 		//初始化连接策略
+		//每次添加策略都在这里添加
 		switch (StrategyString) {
 			case SendBlock.strategyName:
 				this.strategy=new SendBlock(this,endpoint);
@@ -116,11 +119,12 @@ public class ClientManager extends Manager {
 			case SearchTransaction.strategyName:
 				this.strategy=new SearchTransaction(this,endpoint);
 				break;
+			case DownloadBlocks.strategyName:
+				this.strategy=new DownloadBlocks(this,endpoint);
 			default:
 				System.out.println("InvalidStrategy");
 				break;
 			//throw new InvalidMessage();
-
 		}
 		endpoint.start();
 	}
@@ -189,6 +193,13 @@ public class ClientManager extends Manager {
 		searchTransactionProtocol = new SearchTransactionProtocol(endpoint,this);
 		try {
 			endpoint.handleProtocol(searchTransactionProtocol);
+		} catch (ProtocolAlreadyRunning protocolAlreadyRunning) {
+			protocolAlreadyRunning.printStackTrace();
+		}
+
+		downloadBlocksProtocol = new DownloadBlocksProtocol(endpoint,this);
+		try {
+			endpoint.handleProtocol(downloadBlocksProtocol);
 		} catch (ProtocolAlreadyRunning protocolAlreadyRunning) {
 			protocolAlreadyRunning.printStackTrace();
 		}

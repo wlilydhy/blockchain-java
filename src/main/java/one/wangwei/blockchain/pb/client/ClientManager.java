@@ -121,6 +121,8 @@ public class ClientManager extends Manager {
 				break;
 			case DownloadBlocks.strategyName:
 				this.strategy=new DownloadBlocks(this,endpoint);
+			case DownloadTx.strategyName:
+				this.strategy=new DownloadTx(this,endpoint);
 			default:
 				System.out.println("InvalidStrategy");
 				break;

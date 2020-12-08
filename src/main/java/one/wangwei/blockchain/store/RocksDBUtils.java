@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import one.wangwei.blockchain.block.Block;
+import one.wangwei.blockchain.block.BlockHead;
 import one.wangwei.blockchain.transaction.TXOutput;
 import one.wangwei.blockchain.transaction.Transaction;
 import one.wangwei.blockchain.util.SerializeUtils;
@@ -20,7 +21,7 @@ import java.util.Map;
  * @date 2018/02/27
  */
 @Slf4j
-public class    RocksDBUtils {
+public class RocksDBUtils {
 
     /**
      * 区块链数据文件
@@ -55,6 +56,11 @@ public class    RocksDBUtils {
      * 当前区块长度
      */
     private static final String bestHeight = "h";
+
+    /**
+     * 区块头信息
+     */
+    private static final String blockHead = "head";
 
     private volatile static RocksDBUtils instance;
 
@@ -93,6 +99,9 @@ public class    RocksDBUtils {
     @Getter
     private Map<String, byte[]> txBucket;
 
+    @Getter
+    private Map<String, byte[]> blockHeadBucket;
+
 
 
     private RocksDBUtils() {
@@ -101,6 +110,7 @@ public class    RocksDBUtils {
         initChainStateBucket();
         initIpBucket();
         initTxBucket();
+        initBlockHeadBucket();
     }
 
     /**
@@ -195,6 +205,25 @@ public class    RocksDBUtils {
         }
     }
 
+    /**
+     * 初始化 blocksHead 数据桶
+     */
+    private void initBlockHeadBucket() {
+        try {
+            byte[] blockHeadBucketKey = SerializeUtils.serialize(blockHead);//BLOCKS_BUCKET_KEY="block"
+            byte[] blockHeadBucketBytes = db.get(blockHeadBucketKey);
+            if (blockHeadBucketBytes != null) {
+                blockHeadBucket = (Map) SerializeUtils.deserialize(blockHeadBucketBytes);
+            } else {
+                blockHeadBucket = Maps.newHashMap();
+                db.put(blockHeadBucketKey, SerializeUtils.serialize(blockHeadBucket));
+            }
+        } catch (RocksDBException e) {
+            log.error("Fail to init blockHead bucket ! ", e);
+            throw new RuntimeException("Fail to init blockHead bucket ! ", e);
+        }
+    }
+
 
     /**
      * 保存最新一个区块的Hash值
@@ -259,6 +288,20 @@ public class    RocksDBUtils {
         }
     }
 
+    /**
+     * 保存最新一个区块的HEAD
+     * @param blockHeadd
+     */
+    public void putBlockHead(BlockHead blockHeadd) {
+        try {
+            blockHeadBucket.put(blockHead, SerializeUtils.serialize(blockHeadd));
+            db.put(SerializeUtils.serialize(blockHead), SerializeUtils.serialize(blockHeadBucket));
+        } catch (RocksDBException e) {
+            log.error("Fail to put blockHead ! headHash=" + blockHeadd.getHash(), e);
+            throw new RuntimeException("Fail to put last block hash ! headHash=" + blockHeadd.getHash(), e);
+        }
+    }
+
 
     /**
      * 查询最新一个区块的Hash值
@@ -290,6 +333,7 @@ public class    RocksDBUtils {
         //this.closeDB();
         return "0";
     }
+
 
 
     /**
@@ -505,7 +549,21 @@ public class    RocksDBUtils {
         }
     }
 
+    /**
+     * 删除 blockHead 数据
+     *
 
+     */
+    public void deleteBlockhead(String hash) {
+        try {
+            blockHeadBucket.remove(hash);
+            db.put(SerializeUtils.serialize(blockHead), SerializeUtils.serialize(blockHeadBucket));
+            //this.closeDB();
+        } catch (Exception e) {
+            log.error("Fail to delete head ! " , e);
+            throw new RuntimeException("Fail to delete head ! " , e);
+        }
+    }
 
 
 

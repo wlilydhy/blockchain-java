@@ -16,13 +16,13 @@ public class BlockHead {
     private String prevBlockHash;
     private long timeStamp;
     private long nonce;
-    private byte[] merkleTreeHash;
+    private byte[] merkleRootHash;
 
     public BlockHead(Block block){
         this.hash=block.getHash();
         this.prevBlockHash=block.getPrevBlockHash();
         this.timeStamp=block.getTimeStamp();
         this.nonce=block.getNonce();
-        this.merkleTreeHash=block.getMerkleTree().getRoot().getHash();
+        this.merkleRootHash=block.getMerkleTree().getRoot().getHash();
     }
 }

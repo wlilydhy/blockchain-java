@@ -173,7 +173,7 @@ public class MerkleTree {
     }
 
 
-    public void MerkleProof(byte[] TxHash) {
+    public List<Node> MerkleProof(byte[] TxHash) {
         int index = -1;
         int length = this.getLeafHashes().length-1;
         for (int i = 0; i < length; i++) {
@@ -184,7 +184,7 @@ public class MerkleTree {
             }
         }
         if (index == -1) {
-            return;
+            return null;
         }
         List<Node> result = new ArrayList<>();
         result.add(this.getRoot());
@@ -215,10 +215,7 @@ public class MerkleTree {
                 current=current.getLeft();
             }
         }
-//        System.out.println("proof length is "+ result.size());
-//        for(int i=0;i<result.size();i++){
-//            System.out.println("proof:"+result.get(i).getHash().toString());
-//        }
+        return result;
     }
 
     private static boolean isLeaf(Node node){

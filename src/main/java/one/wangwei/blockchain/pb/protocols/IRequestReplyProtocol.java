@@ -41,7 +41,7 @@ public interface IRequestReplyProtocol {
 	 * @param msg
 	 * @throws EndpointUnavailable
 	 */
-	public void receiveReply(Message msg) throws EndpointUnavailable;
+	public void receiveReply(Message msg) throws EndpointUnavailable, DecoderException;
 	
 	/**
 	 * Receive a request message.

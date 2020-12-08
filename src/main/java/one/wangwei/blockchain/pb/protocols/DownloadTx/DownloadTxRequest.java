@@ -15,9 +15,7 @@ public class DownloadTxRequest extends Message {
     }
 
     public DownloadTxRequest(Document doc) throws InvalidMessage {
-
         super(name, getDataProtocol.protocolName, Type.Request, doc);
         this.doc = doc;
-
     }
 }

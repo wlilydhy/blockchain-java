@@ -1,10 +1,13 @@
 package one.wangwei.blockchain.pb;
 
 import one.wangwei.blockchain.block.Block;
+import one.wangwei.blockchain.block.BlockHead;
 import one.wangwei.blockchain.pb.protocols.ICallback;
 import one.wangwei.blockchain.pb.protocols.Inv.InvProtocol;
 import one.wangwei.blockchain.store.RocksDBUtils;
+import one.wangwei.blockchain.transaction.MerkleTree;
 import one.wangwei.blockchain.transaction.Transaction;
+import one.wangwei.blockchain.util.ByteUtils;
 import one.wangwei.blockchain.util.SerializeUtils;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -114,6 +117,21 @@ public class Utils {
 		List<String> list = (List<String>) SerializeUtils.deserialize(sre);
 		return list;
 	}
+
+	public String NodelistToString(List<MerkleTree.Node> list) throws DecoderException {
+		byte[] sre = SerializeUtils.serialize(list);
+		String str = Hex.encodeHexString(sre);
+		return str;
+	}
+
+	public List<MerkleTree.Node> stringToNodeList(String str) throws DecoderException {
+		byte[] sre = Hex.decodeHex(str);
+		List<MerkleTree.Node> list = (List<MerkleTree.Node>) SerializeUtils.deserialize(sre);
+		return list;
+	}
+
+
+
 	/**
 	 * 查找并返回指定的交易，如果不存在返回null
 	 * @param Txid
@@ -124,19 +142,6 @@ public class Utils {
 		byte[] bytes=txBucket.get(Txid);
 		Transaction transaction = (Transaction) SerializeUtils.deserialize(bytes);
 		return transaction;
-//		Iterator<Map.Entry<String,byte[]>> iterator = txBucket.entrySet().iterator();
-//		if(!iterator.hasNext()){
-//			log.info("Txbucket is empty");
-//		}
-//		while(iterator.hasNext()){
-//			Map.Entry<String, byte[]> entry = iterator.next();
-//			String id = entry.getKey();
-//			if(id.equals(Txid)){
-//				return (Transaction) SerializeUtils.deserialize(entry.getValue());
-//			}
-//		}
-//		log.info("can not find the transaction by txid");
-//		return null;
 	}
 
 	/**
@@ -165,6 +170,79 @@ public class Utils {
 		return null;
  	}
 
+
+	/**
+	 * 从区块链中查找交易
+	 * @param txid
+	 * @return
+	 */
+
+	public boolean findTransaction(String txid,Block block) {
+
+		Transaction[] transactions = block.getTransactions();
+		for (Transaction t : transactions) {
+			if (t.getStringOfTxid().equals(txid)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * check SPV
+	 */
+	public boolean checkSPV(List<MerkleTree.Node> merkleProof){
+
+		List<byte[]> merkleRoot = new ArrayList<>();
+		Map<String,byte[]> blockHeadBucket = RocksDBUtils.getInstance().getBlockHeadBucket();
+		Iterator<Map.Entry<String,byte[]>> iterator = blockHeadBucket.entrySet().iterator();
+		if(!iterator.hasNext()){
+			log.info("blockBucket is empty");
+		}
+		while(iterator.hasNext()){
+			Map.Entry<String, byte[]> entry = iterator.next();
+			byte[] blockHeadBytes = entry.getValue();
+			BlockHead blockhead =(BlockHead) SerializeUtils.deserialize(blockHeadBytes);
+			merkleRoot.add(blockhead.getMerkleRootHash());
+		}
+
+		int flag=0;
+		for(byte[] Root : merkleRoot){
+			if(byteEqual(Root,merkleProof.get(0).getHash())){
+				flag=1;
+				break;
+			}
+		}
+		if(flag==0){
+			return false;
+		}
+
+		for(int i=merkleProof.size()-1;i>=2;i=i-2){
+			byte[] rightChildHash = merkleProof.get(i).getHash();
+			byte[] leftChildHash = merkleProof.get(i-1).getHash();
+			byte[] hash = ByteUtils.merge(leftChildHash, rightChildHash);
+			if(!byteEqual(hash,merkleProof.get(i-2).getHash())){
+				return false;
+			}
+		}
+		return true;
+
+	}
+
+	/**
+	 * byteEqual
+	 */
+	public boolean byteEqual(byte[] a,byte[] b){
+		if(a.length==b.length){
+			for(int i=0;i<a.length;i++){
+				if(a[i]!=b[i]){
+					return false;
+				}
+			}
+			return true;
+		}
+		return false;
+	}
 
 
 

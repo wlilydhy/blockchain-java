@@ -8,6 +8,7 @@ import one.wangwei.blockchain.Net.Inv;
 import one.wangwei.blockchain.pb.*;
 import one.wangwei.blockchain.pb.Strategy.*;
 import one.wangwei.blockchain.pb.protocols.DownloadBlocks.DownloadBlocksProtocol;
+import one.wangwei.blockchain.pb.protocols.DownloadTx.DownloadTxProtocol;
 import one.wangwei.blockchain.pb.protocols.HelloWorld.HelloWorldProtocol;
 import one.wangwei.blockchain.pb.protocols.IRequestReplyProtocol;
 import one.wangwei.blockchain.pb.protocols.Inv.InvProtocol;
@@ -16,6 +17,7 @@ import one.wangwei.blockchain.pb.protocols.Protocol;
 import one.wangwei.blockchain.pb.protocols.SearchTransaction.SearchTransactionProtocol;
 import one.wangwei.blockchain.pb.protocols.Version.VersionProtocol;
 import one.wangwei.blockchain.pb.protocols.getData.getDataProtocol;
+import one.wangwei.blockchain.pb.protocols.getIp.getIpProtocol;
 import one.wangwei.blockchain.pb.protocols.keepalive.KeepAliveProtocol;
 import one.wangwei.blockchain.pb.protocols.session.SessionProtocol;
 
@@ -47,12 +49,14 @@ public class ClientManager extends Manager {
 	private getDataProtocol getDataProtocol;
 	private SearchTransactionProtocol searchTransactionProtocol;
 	private DownloadBlocksProtocol downloadBlocksProtocol;
+	private getIpProtocol getIpProtocol;
+	private DownloadTxProtocol downloadTxProtocol;
 	private Socket socket;
 	private ConnectionStrategy strategy;
 	private String StrategyString;
 	private Endpoint endpoint;
-	
-	public ClientManager(String host,int port,String strategyString) throws UnknownHostException, IOException {
+
+	public ClientManager(String host, int port, String strategyString) throws UnknownHostException, IOException {
 
 		//socket=new Socket(InetAddress.getByName(host),port);
 		//socket=new Socket(host,port);
@@ -99,30 +103,38 @@ public class ClientManager extends Manager {
 
 	@SneakyThrows
 	@Override
-	public void run(){
-		socket=new Socket("127.0.0.1",9999);
-		Endpoint endpoint = new Endpoint(socket,this);
+	public void run() {
+		socket = new Socket("127.0.0.1", 9999);
+		Endpoint endpoint = new Endpoint(socket, this);
 		//StrategyString = strategyString;
 
 		//初始化连接策略
 		//每次添加策略都在这里添加
 		switch (StrategyString) {
 			case SendBlock.strategyName:
-				this.strategy=new SendBlock(this,endpoint);
+				this.strategy = new SendBlock(this, endpoint);
 				break;
 			case HelloWorld.strategyName:
-				this.strategy=new HelloWorld(this,endpoint);
+				this.strategy = new HelloWorld(this, endpoint);
 				break;
 			case SendTransaction.strategyName:
-				this.strategy=new SendTransaction(this,endpoint);
+				this.strategy = new SendTransaction(this, endpoint);
 				break;
 			case SearchTransaction.strategyName:
-				this.strategy=new SearchTransaction(this,endpoint);
+				this.strategy = new SearchTransaction(this, endpoint);
 				break;
 			case DownloadBlocks.strategyName:
-				this.strategy=new DownloadBlocks(this,endpoint);
+				this.strategy = new DownloadBlocks(this, endpoint);
+				break;
 			case DownloadTx.strategyName:
-				this.strategy=new DownloadTx(this,endpoint);
+				this.strategy = new DownloadTx(this, endpoint);
+				break;
+			case SPV.strategyName:
+				this.strategy = new SPV(this, endpoint);
+				break;
+			case getIp.strategyName:
+				this.strategy = new getIp(this, endpoint);
+				break;
 			default:
 				System.out.println("InvalidStrategy");
 				break;
@@ -134,13 +146,14 @@ public class ClientManager extends Manager {
 	/**
 	 * The endpoint is ready to use.
 	 * 每次新建protocol都要在这里添加
+	 *
 	 * @param endpoint
 	 */
 	@Override
 	public void endpointReady(Endpoint endpoint) {
 		log.info("connection with server established");
 		//suppressionProtocol导入并初始化
-		sessionProtocol = new SessionProtocol(endpoint,this);
+		sessionProtocol = new SessionProtocol(endpoint, this);
 		try {
 			// we need to add it to the endpoint before starting it
 			endpoint.handleProtocol(sessionProtocol);
@@ -154,7 +167,7 @@ public class ClientManager extends Manager {
 			log.warning("server initiated the session protocol... weird");
 		}
 		//keepAliceProtocol导入并初始化
-		keepAliveProtocol = new KeepAliveProtocol(endpoint,this);
+		keepAliveProtocol = new KeepAliveProtocol(endpoint, this);
 		try {
 			// we need to add it to the endpoint before starting it
 			endpoint.handleProtocol(keepAliveProtocol);
@@ -164,62 +177,79 @@ public class ClientManager extends Manager {
 			log.warning("server initiated the session protocol... weird");
 		}
 
-		versionProtocol =new VersionProtocol(endpoint,this);
+		versionProtocol = new VersionProtocol(endpoint, this);
 		try {
 			endpoint.handleProtocol(versionProtocol);
 		} catch (ProtocolAlreadyRunning protocolAlreadyRunning) {
 			protocolAlreadyRunning.printStackTrace();
 		}
 
-		helloWorldProtocol=new HelloWorldProtocol(endpoint,this);
+		helloWorldProtocol = new HelloWorldProtocol(endpoint, this);
 		try {
 			endpoint.handleProtocol(helloWorldProtocol);
 		} catch (ProtocolAlreadyRunning protocolAlreadyRunning) {
 			protocolAlreadyRunning.printStackTrace();
 		}
 
-		invProtocol = new InvProtocol(endpoint,this);
+		invProtocol = new InvProtocol(endpoint, this);
 		try {
 			endpoint.handleProtocol(invProtocol);
 		} catch (ProtocolAlreadyRunning protocolAlreadyRunning) {
 			protocolAlreadyRunning.printStackTrace();
 		}
 
-		getDataProtocol = new getDataProtocol(endpoint,this);
+		getDataProtocol = new getDataProtocol(endpoint, this);
 		try {
 			endpoint.handleProtocol(getDataProtocol);
 		} catch (ProtocolAlreadyRunning protocolAlreadyRunning) {
 			protocolAlreadyRunning.printStackTrace();
 		}
 
-		searchTransactionProtocol = new SearchTransactionProtocol(endpoint,this);
+		searchTransactionProtocol = new SearchTransactionProtocol(endpoint, this);
 		try {
 			endpoint.handleProtocol(searchTransactionProtocol);
 		} catch (ProtocolAlreadyRunning protocolAlreadyRunning) {
 			protocolAlreadyRunning.printStackTrace();
 		}
 
-		downloadBlocksProtocol = new DownloadBlocksProtocol(endpoint,this);
+		downloadBlocksProtocol = new DownloadBlocksProtocol(endpoint, this);
 		try {
 			endpoint.handleProtocol(downloadBlocksProtocol);
 		} catch (ProtocolAlreadyRunning protocolAlreadyRunning) {
 			protocolAlreadyRunning.printStackTrace();
 		}
 
+		downloadTxProtocol = new DownloadTxProtocol(endpoint, this);
+		try {
+			endpoint.handleProtocol(downloadTxProtocol);
+		} catch (ProtocolAlreadyRunning protocolAlreadyRunning) {
+			protocolAlreadyRunning.printStackTrace();
+		}
+
+		getIpProtocol = new getIpProtocol(endpoint, this);
+		try {
+			endpoint.handleProtocol(getIpProtocol);
+		} catch (ProtocolAlreadyRunning protocolAlreadyRunning) {
+			protocolAlreadyRunning.printStackTrace();
+		}
+
+
 	}
-	
+
 	/**
 	 * The endpoint close() method has been called and completed.
+	 *
 	 * @param endpoint
 	 */
 	@Override
 	public void endpointClosed(Endpoint endpoint) {
 		log.info("connection with server terminated");
 	}
-	
+
 	/**
 	 * The endpoint has abruptly disconnected. It can no longer
 	 * send or receive data.
+	 *
 	 * @param endpoint
 	 */
 	@Override
@@ -230,6 +260,7 @@ public class ClientManager extends Manager {
 
 	/**
 	 * An invalid message was received over the endpoint.
+	 *
 	 * @param endpoint
 	 */
 	@Override
@@ -237,36 +268,39 @@ public class ClientManager extends Manager {
 		log.severe("server sent an invalid message");
 		endpoint.close();
 	}
-	
+
 
 	/**
 	 * The protocol on the endpoint is not responding.
+	 *
 	 * @param endpoint
 	 */
 	@Override
-	public void endpointTimedOut(Endpoint endpoint,Protocol protocol) {
+	public void endpointTimedOut(Endpoint endpoint, Protocol protocol) {
 		log.severe("server has timed out");
 		endpoint.close();
 	}
 
 	/**
 	 * The protocol on the endpoint has been violated.
+	 *
 	 * @param endpoint
 	 */
 	@Override
-	public void protocolViolation(Endpoint endpoint,Protocol protocol) {
-		log.severe("protocol with server has been violated: "+protocol.getProtocolName());
+	public void protocolViolation(Endpoint endpoint, Protocol protocol) {
+		log.severe("protocol with server has been violated: " + protocol.getProtocolName());
 		endpoint.close();
 	}
 
 	/**
 	 * The session protocol is indicating that a session has started.
+	 *
 	 * @param endpoint
 	 */
 	@Override
 	public void sessionStarted(Endpoint endpoint) {
 		log.info("session has started with server");
-		VersionProtocol versionProtocol= new VersionProtocol(endpoint,this);
+		VersionProtocol versionProtocol = new VersionProtocol(endpoint, this);
 		try {
 			versionProtocol.startAsClient();
 		} catch (EndpointUnavailable endpointUnavailable) {
@@ -276,7 +310,8 @@ public class ClientManager extends Manager {
 	}
 
 	/**
-	 * The session protocol is indicating that the session has stopped. 
+	 * The session protocol is indicating that the session has stopped.
+	 *
 	 * @param endpoint
 	 */
 	@Override
@@ -288,11 +323,10 @@ public class ClientManager extends Manager {
 
 	//这里可以作为抽象的入口，在这里选择到底做什么业务流程。
 	@Override
-	public void VersionStarted(){
+	public void VersionStarted() {
 		//log.info("version has started with server");
 		strategy.algorithmMethod();
 	}
-
 
 
 	/**
@@ -300,6 +334,7 @@ public class ClientManager extends Manager {
 	 * is allowed then the manager should tell the endpoint to handle it
 	 * using {@link one.wangwei.blockchain.pb.Endpoint#handleProtocol(Protocol)}
 	 * before returning true.
+	 *
 	 * @param protocol
 	 * @return true if the protocol was started, false if not (not allowed to run)
 	 */
@@ -307,7 +342,7 @@ public class ClientManager extends Manager {
 	public boolean protocolRequested(Endpoint endpoint, Protocol protocol) {
 		// the only protocols in this system are this kind...
 		try {
-			((IRequestReplyProtocol)protocol).startAsClient();
+			((IRequestReplyProtocol) protocol).startAsClient();
 			endpoint.handleProtocol(protocol);
 			return true;
 		} catch (EndpointUnavailable e) {
@@ -316,7 +351,10 @@ public class ClientManager extends Manager {
 		} catch (ProtocolAlreadyRunning e) {
 			// even more weird... should log this too
 			return false;
+		} catch (InvalidMessage invalidMessage) {
+			invalidMessage.printStackTrace();
 		}
+		return false;
 	}
 
 }

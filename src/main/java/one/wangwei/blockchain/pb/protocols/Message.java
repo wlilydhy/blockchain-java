@@ -8,12 +8,16 @@ import one.wangwei.blockchain.pb.protocols.HelloWorld.HelloWorldReply;
 import one.wangwei.blockchain.pb.protocols.HelloWorld.HelloWorldRequest;
 import one.wangwei.blockchain.pb.protocols.Inv.InvReply;
 import one.wangwei.blockchain.pb.protocols.Inv.InvRequest;
+import one.wangwei.blockchain.pb.protocols.SPV.SPVReply;
+import one.wangwei.blockchain.pb.protocols.SPV.SPVRequest;
 import one.wangwei.blockchain.pb.protocols.SearchTransaction.SearchTransactionReply;
 import one.wangwei.blockchain.pb.protocols.SearchTransaction.SearchTransactionRequest;
 import one.wangwei.blockchain.pb.protocols.Version.VersionReply;
 import one.wangwei.blockchain.pb.protocols.Version.VersionRequest;
 import one.wangwei.blockchain.pb.protocols.getData.getDataReply;
 import one.wangwei.blockchain.pb.protocols.getData.getDataRequest;
+import one.wangwei.blockchain.pb.protocols.getIp.getIpReply;
+import one.wangwei.blockchain.pb.protocols.getIp.getIpRequest;
 import one.wangwei.blockchain.pb.protocols.keepalive.KeepAliveReply;
 import one.wangwei.blockchain.pb.protocols.keepalive.KeepAliveRequest;
 import one.wangwei.blockchain.pb.protocols.session.SessionStartReply;
@@ -114,6 +118,10 @@ public class Message {
 			case DownloadBlocksRequest.name: return new DownloadBlocksRequest(doc);
 			case DownloadTxRequest.name: return new DownloadTxRequest(doc);
 			case DownloadTxReply.name: return new DownloadTxReply(doc);
+			case SPVReply.name: return new SPVReply(doc);
+			case SPVRequest.name: return new SPVRequest(doc);
+			case getIpReply.name : return new getIpReply(doc);
+			case getIpRequest.name : return new getIpRequest(doc);
 			// put more message cases here
 			// if nothing matches, its invalid
 			default: throw new InvalidMessage();

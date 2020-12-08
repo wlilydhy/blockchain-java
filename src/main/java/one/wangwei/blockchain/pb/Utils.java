@@ -130,6 +130,18 @@ public class Utils {
 		return list;
 	}
 
+	public Map<String,Integer> stringToMap(String str) throws DecoderException {
+		byte[] sre = Hex.decodeHex(str);
+		Map<String,Integer> ipBucket = (Map<String,Integer>) SerializeUtils.deserialize(sre);
+		return ipBucket;
+	}
+
+	public String MapToString(Map<String,Integer> ipBucket) throws DecoderException {
+		byte[] sre = SerializeUtils.serialize(ipBucket);
+		String str = Hex.encodeHexString(sre);
+		return str;
+	}
+
 
 
 	/**

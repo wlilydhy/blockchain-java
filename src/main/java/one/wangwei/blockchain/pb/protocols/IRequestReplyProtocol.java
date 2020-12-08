@@ -21,7 +21,7 @@ public interface IRequestReplyProtocol {
 	 * Start the protocol as a client.
 	 * @throws EndpointUnavailable
 	 */
-	public void startAsClient() throws EndpointUnavailable;
+	public void startAsClient() throws EndpointUnavailable, InvalidMessage;
 	
 	/**
 	 * Start the protocol as a server.

@@ -99,7 +99,7 @@ public class Client {
     public static void downloadBlockchain() throws IOException, DecoderException {
         Map<String ,Integer> ipbucket = RocksDBUtils.getInstance().getIpBucket();
         //sDBUtils.getInstance().closeDB();
-        ipbucket.put("127.0.0.1",9999);
+        //ipbucket.put("127.0.0.1",9999);
         Iterator<Map.Entry<String ,Integer>> iterator = ipbucket.entrySet().iterator();
         if(!iterator.hasNext()){
             log.error("ipbucket is empty");

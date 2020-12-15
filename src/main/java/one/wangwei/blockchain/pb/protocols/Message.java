@@ -2,6 +2,8 @@ package one.wangwei.blockchain.pb.protocols;
 
 import one.wangwei.blockchain.pb.protocols.DownloadBlocks.DownloadBlocksReply;
 import one.wangwei.blockchain.pb.protocols.DownloadBlocks.DownloadBlocksRequest;
+import one.wangwei.blockchain.pb.protocols.DownloadBlocksHead.DownloadBlocksHeadReply;
+import one.wangwei.blockchain.pb.protocols.DownloadBlocksHead.DownloadBlocksHeadRequest;
 import one.wangwei.blockchain.pb.protocols.DownloadTx.DownloadTxReply;
 import one.wangwei.blockchain.pb.protocols.DownloadTx.DownloadTxRequest;
 import one.wangwei.blockchain.pb.protocols.HelloWorld.HelloWorldReply;
@@ -122,6 +124,8 @@ public class Message {
 			case SPVRequest.name: return new SPVRequest(doc);
 			case getIpReply.name : return new getIpReply(doc);
 			case getIpRequest.name : return new getIpRequest(doc);
+			case DownloadBlocksHeadReply.name : return new DownloadBlocksHeadReply(doc);
+			case DownloadBlocksHeadRequest.name : return new DownloadBlocksHeadRequest(doc);
 			// put more message cases here
 			// if nothing matches, its invalid
 			default: throw new InvalidMessage();

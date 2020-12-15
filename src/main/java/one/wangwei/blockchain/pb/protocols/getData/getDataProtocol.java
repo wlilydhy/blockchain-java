@@ -20,6 +20,8 @@ import java.util.logging.Logger;
 public class getDataProtocol extends Protocol implements IRequestReplyProtocol {
     private static Logger log = Logger.getLogger(getDataProtocol.class.getName());
     private boolean protocolStop = false;
+    private boolean newBlock = false;
+    private boolean newTransaction = false;
     private String RequestType;
     private String ReplyType;
     private String TransactionHash;
@@ -98,8 +100,13 @@ public class getDataProtocol extends Protocol implements IRequestReplyProtocol {
         if(msg instanceof getDataReply) {
             if(((getDataReply) msg).getReplyType().equals("Block")){
                 Block block=((getDataReply) msg).getBlock();
+                //check block
                 RocksDBUtils.getInstance().putBlock(block);
                 log.info("block is received\n"+block.toString());
+                //broadcast
+                if(newBlock){
+                  Utils.getInstance().broadcastBlock(block);
+                }
                 return;
 
             }
@@ -107,6 +114,10 @@ public class getDataProtocol extends Protocol implements IRequestReplyProtocol {
                 Transaction transaction = ((getDataReply) msg).getTransaction();
                 RocksDBUtils.getInstance().putTransaction(transaction);
                 log.info("transaction is received\n" + transaction.toString());
+                if(newTransaction){
+                    Utils.getInstance().broadcastTransaction(transaction);
+                }
+
                 return;
             }
         }

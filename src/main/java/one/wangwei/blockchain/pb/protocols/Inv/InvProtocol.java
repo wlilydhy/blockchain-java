@@ -119,6 +119,7 @@ public class InvProtocol extends Protocol implements IRequestReplyProtocol {
                 getDataProtocol.setRequestType("Block");
                 getDataProtocol.setReplyType("Block");
                 getDataProtocol.setBlockHash(BlockHash);
+                getDataProtocol.setNewBlock(true);
                 getDataProtocol.startAsClient();
 
             }
@@ -138,6 +139,7 @@ public class InvProtocol extends Protocol implements IRequestReplyProtocol {
                 getDataProtocol.setRequestType("Transaction");
                 getDataProtocol.setReplyType("Transaction");
                 getDataProtocol.setTransactionHash(TxHash);
+                getDataProtocol.setNewTransaction(true);
                 getDataProtocol.startAsClient();
             }
 

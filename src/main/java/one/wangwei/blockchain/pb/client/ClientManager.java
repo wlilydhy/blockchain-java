@@ -8,12 +8,14 @@ import one.wangwei.blockchain.Net.Inv;
 import one.wangwei.blockchain.pb.*;
 import one.wangwei.blockchain.pb.Strategy.*;
 import one.wangwei.blockchain.pb.protocols.DownloadBlocks.DownloadBlocksProtocol;
+import one.wangwei.blockchain.pb.protocols.DownloadBlocksHead.DownloadBlocksHeadProtocol;
 import one.wangwei.blockchain.pb.protocols.DownloadTx.DownloadTxProtocol;
 import one.wangwei.blockchain.pb.protocols.HelloWorld.HelloWorldProtocol;
 import one.wangwei.blockchain.pb.protocols.IRequestReplyProtocol;
 import one.wangwei.blockchain.pb.protocols.Inv.InvProtocol;
 import one.wangwei.blockchain.pb.protocols.InvalidMessage;
 import one.wangwei.blockchain.pb.protocols.Protocol;
+import one.wangwei.blockchain.pb.protocols.SPV.SPVProtocol;
 import one.wangwei.blockchain.pb.protocols.SearchTransaction.SearchTransactionProtocol;
 import one.wangwei.blockchain.pb.protocols.Version.VersionProtocol;
 import one.wangwei.blockchain.pb.protocols.getData.getDataProtocol;
@@ -51,6 +53,8 @@ public class ClientManager extends Manager {
 	private DownloadBlocksProtocol downloadBlocksProtocol;
 	private getIpProtocol getIpProtocol;
 	private DownloadTxProtocol downloadTxProtocol;
+	private DownloadBlocksHeadProtocol downloadBlocksHeadProtocol;
+	private SPVProtocol spvProtocol;
 	private Socket socket;
 	private ConnectionStrategy strategy;
 	private String StrategyString;
@@ -134,6 +138,9 @@ public class ClientManager extends Manager {
 				break;
 			case getIp.strategyName:
 				this.strategy = new getIp(this, endpoint);
+				break;
+			case DownloadBlocksHead.strategyName:
+				this.strategy= new DownloadBlocksHead(this,endpoint);
 				break;
 			default:
 				System.out.println("InvalidStrategy");
@@ -226,6 +233,20 @@ public class ClientManager extends Manager {
 			protocolAlreadyRunning.printStackTrace();
 		}
 
+		downloadBlocksHeadProtocol = new DownloadBlocksHeadProtocol(endpoint, this);
+		try {
+			endpoint.handleProtocol(downloadBlocksHeadProtocol);
+		} catch (ProtocolAlreadyRunning protocolAlreadyRunning) {
+			protocolAlreadyRunning.printStackTrace();
+		}
+
+		spvProtocol = new SPVProtocol(endpoint,this);
+		try {
+			endpoint.handleProtocol(spvProtocol);
+		} catch (ProtocolAlreadyRunning protocolAlreadyRunning) {
+			protocolAlreadyRunning.printStackTrace();
+		}
+
 		getIpProtocol = new getIpProtocol(endpoint, this);
 		try {
 			endpoint.handleProtocol(getIpProtocol);
@@ -244,6 +265,7 @@ public class ClientManager extends Manager {
 	@Override
 	public void endpointClosed(Endpoint endpoint) {
 		log.info("connection with server terminated");
+		return ;
 	}
 
 	/**

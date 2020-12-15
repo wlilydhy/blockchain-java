@@ -1,7 +1,11 @@
 package one.wangwei.blockchain.pb;
 
+import lombok.SneakyThrows;
 import one.wangwei.blockchain.block.Block;
 import one.wangwei.blockchain.block.BlockHead;
+import one.wangwei.blockchain.pb.Strategy.SendBlock;
+import one.wangwei.blockchain.pb.Strategy.SendTransaction;
+import one.wangwei.blockchain.pb.client.ClientManager;
 import one.wangwei.blockchain.pb.protocols.ICallback;
 import one.wangwei.blockchain.pb.protocols.Inv.InvProtocol;
 import one.wangwei.blockchain.store.RocksDBUtils;
@@ -12,6 +16,7 @@ import one.wangwei.blockchain.util.SerializeUtils;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -142,6 +147,18 @@ public class Utils {
 		return str;
 	}
 
+	public Map<String,byte[]> stringToMap1(String str) throws DecoderException {
+		byte[] sre = Hex.decodeHex(str);
+		Map<String,byte[]> blockHeadBucket = (Map<String,byte[]>) SerializeUtils.deserialize(sre);
+		return blockHeadBucket;
+	}
+
+	public String MapToString1(Map<String,byte[]> blockHeadBucket)  {
+		byte[] sre = SerializeUtils.serialize(blockHeadBucket);
+		String str = Hex.encodeHexString(sre);
+		return str;
+	}
+
 
 
 	/**
@@ -256,6 +273,53 @@ public class Utils {
 		return false;
 	}
 
+	/**
+	 * 广播新区块
+	 */
+	public void broadcastBlock(Block block){
+		Map<String ,Integer> ipBucket = RocksDBUtils.getInstance().getIpBucket();
+		Iterator<Map.Entry<String,Integer>> iterator = ipBucket.entrySet().iterator();
+		//ipBucket.put("127.0.0.1",9999);
+		if(!iterator.hasNext()){
+			log.info("ipBucket is empty");
+		}
+		while(iterator.hasNext()) {
+			Map.Entry<String, Integer> entry = iterator.next();
+			String ip = entry.getKey();
+			Integer port = entry.getValue();
+			ClientManager clientManager = null;
+			try {
+				clientManager = new ClientManager(ip,port, SendBlock.strategyName);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			clientManager.start();
+		}
+	}
+
+	/**
+	 * 广播新区块
+	 */
+	public void broadcastTransaction(Transaction transaction){
+		Map<String ,Integer> ipBucket = RocksDBUtils.getInstance().getIpBucket();
+		Iterator<Map.Entry<String,Integer>> iterator = ipBucket.entrySet().iterator();
+		//ipBucket.put("127.0.0.1",9999);
+		if(!iterator.hasNext()){
+			log.info("ipBucket is empty");
+		}
+		while(iterator.hasNext()) {
+			Map.Entry<String, Integer> entry = iterator.next();
+			String ip = entry.getKey();
+			Integer port = entry.getValue();
+			ClientManager clientManager = null;
+			try {
+				clientManager = new ClientManager(ip,port, SendTransaction.strategyName);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			clientManager.start();
+		}
+	}
 
 
 }

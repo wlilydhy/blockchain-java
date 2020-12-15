@@ -4,12 +4,15 @@ import one.wangwei.blockchain.block.Block;
 import one.wangwei.blockchain.pb.Strategy.SendBlock;
 import one.wangwei.blockchain.pb.Strategy.SendTransaction;
 import one.wangwei.blockchain.pb.client.ClientManager;
+import one.wangwei.blockchain.store.RocksDBUtils;
 import one.wangwei.blockchain.transaction.Transaction;
 import org.apache.commons.cli.*;
 import one.wangwei.blockchain.pb.server.ServerManager;
 import org.apache.commons.codec.DecoderException;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -68,9 +71,24 @@ public class Server {
         // the JVM from terminating
        	new ServerManager(9999);
 		ServerManager serverManager = new ServerManager(9999);
-		ClientManager clientManager = new ClientManager("127.0.0.1",9999, SendTransaction.strategyName);
 		serverManager.start();
+		ClientManager clientManager = new ClientManager("127.0.0.1",9999, SendTransaction.strategyName);
 		clientManager.start();
+
+		//循环
+//		Map<String ,Integer> ipBucket = RocksDBUtils.getInstance().getIpBucket();
+//		Iterator<Map.Entry<String,Integer>> iterator = ipBucket.entrySet().iterator();
+//		ipBucket.put("127.0.0.1",9999);
+//		if(!iterator.hasNext()){
+//			log.info("ipBucket is empty");
+//		}
+//		while(iterator.hasNext()) {
+//			Map.Entry<String, Integer> entry = iterator.next();
+//			String ip = entry.getKey();
+//			Integer port = entry.getValue();
+//			ClientManager clientManager = new ClientManager(ip,port, SendTransaction.strategyName);
+//			clientManager.start();
+//		}
 
         
     }

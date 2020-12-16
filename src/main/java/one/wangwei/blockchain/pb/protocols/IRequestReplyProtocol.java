@@ -3,6 +3,8 @@ package one.wangwei.blockchain.pb.protocols;
 import one.wangwei.blockchain.pb.EndpointUnavailable;
 import org.apache.commons.codec.DecoderException;
 
+import java.io.IOException;
+
 /**
  * Request/reply protocol objects must implement this interface.
  * 
@@ -41,7 +43,7 @@ public interface IRequestReplyProtocol {
 	 * @param msg
 	 * @throws EndpointUnavailable
 	 */
-	public void receiveReply(Message msg) throws EndpointUnavailable, DecoderException;
+	public void receiveReply(Message msg) throws EndpointUnavailable, DecoderException, IOException;
 	
 	/**
 	 * Receive a request message.

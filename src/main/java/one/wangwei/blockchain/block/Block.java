@@ -90,7 +90,8 @@ public class Block {
         this.merkleTree = new MerkleTree(txIdArrays);
         return merkleTree.getRoot().getHash();
     }
-
-
-
 }
+
+
+
+

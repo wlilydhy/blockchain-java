@@ -13,8 +13,8 @@ import java.util.Map;
 public class CliThread extends Thread{
 
     public void run(String[] args){
-        CLI cli = new CLI(args);
-        cli.parse();
+        CLIwithPb clIwithPb = new CLIwithPb(args);
+        clIwithPb.parse();
         //SHOW SOMETHING
         Map<String,byte[]> txbucket = RocksDBUtils.getInstance().getTxBucket();
         System.out.println("txbucket's size is"+txbucket.size());

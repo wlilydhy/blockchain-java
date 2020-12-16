@@ -16,7 +16,7 @@ public class getIpRequest extends Message{
      * in this message there are no additional parameters.
      */
     public getIpRequest() {
-        super(name, InvProtocol.protocolName, Type.Request);
+        super(name, getIpProtocol.protocolName, Type.Request);
     }
 
     /**
@@ -27,7 +27,7 @@ public class getIpRequest extends Message{
      * @throws InvalidMessage when the doc does not contain all of the required parameters
      */
     public getIpRequest(Document doc) throws InvalidMessage {
-        super(name,InvProtocol.protocolName, Type.Request,doc); // really just testing the name, otherwise nothing more to test
+        super(name,getIpProtocol.protocolName, Type.Request,doc); // really just testing the name, otherwise nothing more to test
         this.doc=doc;
     }
 }

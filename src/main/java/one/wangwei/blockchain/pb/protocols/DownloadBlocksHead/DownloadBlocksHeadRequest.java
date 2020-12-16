@@ -1,6 +1,7 @@
 package one.wangwei.blockchain.pb.protocols.DownloadBlocksHead;
 
 import lombok.Getter;
+import one.wangwei.blockchain.pb.Strategy.DownloadBlocksHead;
 import one.wangwei.blockchain.pb.protocols.Document;
 import one.wangwei.blockchain.pb.protocols.DownloadBlocks.DownloadBlocksProtocol;
 import one.wangwei.blockchain.pb.protocols.InvalidMessage;
@@ -19,7 +20,7 @@ public class DownloadBlocksHeadRequest extends Message {
      * in this message there are no additional parameters.
      */
     public DownloadBlocksHeadRequest() {
-        super(name, DownloadBlocksProtocol.protocolName, Type.Request);
+        super(name, DownloadBlocksHeadProtocol.protocolName, Type.Request);
     }
 
     /**
@@ -30,7 +31,7 @@ public class DownloadBlocksHeadRequest extends Message {
      * @throws InvalidMessage when the doc does not contain all of the required parameters
      */
     public DownloadBlocksHeadRequest(Document doc) throws InvalidMessage {
-        super(name,getDataProtocol.protocolName, Type.Request,doc); // really just testing the name, otherwise nothing more to test
+        super(name,DownloadBlocksHeadProtocol.protocolName, Type.Request,doc); // really just testing the name, otherwise nothing more to test
         this.doc=doc;
     }
 }

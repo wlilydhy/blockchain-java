@@ -24,9 +24,8 @@ public class SearchTransaction implements  ConnectionStrategy{
     @Override
     public void algorithmMethod(){
         SearchTransactionProtocol searchTransactionProtocol = new SearchTransactionProtocol(endpoint,clientManager);
-        Transaction transaction = Transaction.newCoinbaseTX("1Gsnure8ovCy3SiK6Fth44kDcwrEHjtFuj","goldenBlue");
-
-        searchTransactionProtocol.setTransactionHash(transaction.getStringOfTxid());
+//        Transaction transaction = Transaction.newCoinbaseTX("1Gsnure8ovCy3SiK6Fth44kDcwrEHjtFuj","goldenBlue");
+//        searchTransactionProtocol.setTransactionHash(transaction.getStringOfTxid());
         try {
             searchTransactionProtocol.startAsClient();
         } catch (EndpointUnavailable endpointUnavailable) {

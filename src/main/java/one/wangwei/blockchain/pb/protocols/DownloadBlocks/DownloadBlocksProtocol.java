@@ -2,11 +2,11 @@ package one.wangwei.blockchain.pb.protocols.DownloadBlocks;
 
 import lombok.Setter;
 import one.wangwei.blockchain.block.Block;
-import one.wangwei.blockchain.pb.Endpoint;
-import one.wangwei.blockchain.pb.EndpointUnavailable;
-import one.wangwei.blockchain.pb.Manager;
+import one.wangwei.blockchain.pb.*;
 import one.wangwei.blockchain.pb.Strategy.DownloadBlocks;
-import one.wangwei.blockchain.pb.Utils;
+import one.wangwei.blockchain.pb.Strategy.SendTransaction;
+import one.wangwei.blockchain.pb.Strategy.getData;
+import one.wangwei.blockchain.pb.client.ClientManager;
 import one.wangwei.blockchain.pb.protocols.*;
 import one.wangwei.blockchain.pb.protocols.getData.getDataProtocol;
 import one.wangwei.blockchain.pb.protocols.getData.getDataReply;
@@ -16,6 +16,7 @@ import one.wangwei.blockchain.transaction.Transaction;
 import one.wangwei.blockchain.util.SerializeUtils;
 import org.apache.commons.codec.DecoderException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -88,18 +89,15 @@ public class DownloadBlocksProtocol extends Protocol implements IRequestReplyPro
     }
 
     @Override
-    public void receiveReply(Message msg) throws EndpointUnavailable {
+    public void receiveReply(Message msg) throws EndpointUnavailable, IOException {
 
         if(msg instanceof DownloadBlocksReply) {
             List<String> blockHashes = ((DownloadBlocksReply) msg).getBlockHashList();
-            for(String str : blockHashes){
-                getDataProtocol getDataProtocol = new getDataProtocol(endpoint,manager);
-                getDataProtocol.setRequestType("Block");
-                getDataProtocol.setReplyType("Block");
-                getDataProtocol.setBlockHash(str);
-                getDataProtocol.startAsClient();
-            }
             stopProtocol();
+
+            for(String str : blockHashes){
+                Utils.getInstance().download(str,"Block");
+            }
         }
 
     }
@@ -122,6 +120,7 @@ public class DownloadBlocksProtocol extends Protocol implements IRequestReplyPro
                 blockHashes.add(entry.getKey());
             }
             String str = Utils.getInstance().listToString(blockHashes);
+            //System.out.println("str="+str);
             doc.append("blockHashes",str);
             try {
                 sendReply(new DownloadBlocksReply(doc));

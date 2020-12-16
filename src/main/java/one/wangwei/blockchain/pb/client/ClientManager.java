@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import one.wangwei.blockchain.Net.Inv;
+import one.wangwei.blockchain.block.Block;
 import one.wangwei.blockchain.pb.*;
 import one.wangwei.blockchain.pb.Strategy.*;
 import one.wangwei.blockchain.pb.protocols.DownloadBlocks.DownloadBlocksProtocol;
@@ -22,6 +23,7 @@ import one.wangwei.blockchain.pb.protocols.getData.getDataProtocol;
 import one.wangwei.blockchain.pb.protocols.getIp.getIpProtocol;
 import one.wangwei.blockchain.pb.protocols.keepalive.KeepAliveProtocol;
 import one.wangwei.blockchain.pb.protocols.session.SessionProtocol;
+import one.wangwei.blockchain.transaction.Transaction;
 
 
 import java.io.IOException;
@@ -58,6 +60,14 @@ public class ClientManager extends Manager {
 	private Socket socket;
 	private ConnectionStrategy strategy;
 	private String StrategyString;
+	@Setter
+	private String TxHash;
+	@Setter
+	private Transaction transaction;
+	@Setter
+	private Block block;
+	@Setter
+	private String getDataType;
 	private Endpoint endpoint;
 
 	public ClientManager(String host, int port, String strategyString) throws UnknownHostException, IOException {
@@ -116,13 +126,13 @@ public class ClientManager extends Manager {
 		//每次添加策略都在这里添加
 		switch (StrategyString) {
 			case SendBlock.strategyName:
-				this.strategy = new SendBlock(this, endpoint);
+				this.strategy = new SendBlock(this, endpoint,block);
 				break;
 			case HelloWorld.strategyName:
 				this.strategy = new HelloWorld(this, endpoint);
 				break;
 			case SendTransaction.strategyName:
-				this.strategy = new SendTransaction(this, endpoint);
+				this.strategy = new SendTransaction(this, endpoint,transaction);
 				break;
 			case SearchTransaction.strategyName:
 				this.strategy = new SearchTransaction(this, endpoint);
@@ -134,13 +144,16 @@ public class ClientManager extends Manager {
 				this.strategy = new DownloadTx(this, endpoint);
 				break;
 			case SPV.strategyName:
-				this.strategy = new SPV(this, endpoint);
+				this.strategy = new SPV(this, endpoint,TxHash);
 				break;
 			case getIp.strategyName:
 				this.strategy = new getIp(this, endpoint);
 				break;
 			case DownloadBlocksHead.strategyName:
 				this.strategy= new DownloadBlocksHead(this,endpoint);
+				break;
+			case getData.strategyName:
+				this.strategy= new getData(this,endpoint,TxHash,getDataType);
 				break;
 			default:
 				System.out.println("InvalidStrategy");

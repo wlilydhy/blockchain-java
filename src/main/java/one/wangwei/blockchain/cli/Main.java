@@ -2,6 +2,7 @@ package one.wangwei.blockchain.cli;
 
 import com.google.common.collect.Maps;
 import one.wangwei.blockchain.Net.Server;
+import one.wangwei.blockchain.pb.server.ServerManager;
 import one.wangwei.blockchain.store.RocksDBUtils;
 import one.wangwei.blockchain.transaction.TXOutput;
 import one.wangwei.blockchain.transaction.Transaction;
@@ -27,27 +28,33 @@ public class Main {
 //            RocksDBUtils.getInstance().cleanTxBucket();
 //            RocksDBUtils.getInstance().cleanIpBucket();
 
-            Server serverThread = new Server();
+            ServerManager serverManager = new ServerManager(9999);
+
             CliThread cliThread = new CliThread();
             //String[] argss = {"createwallet"};
-            //1DRDoamPwRDQa1775dVig7X8BitJm1273D +10
-            //1Gsnure8ovCy3SiK6Fth44kDcwrEHjtFuj 10
-            //18b76o68gGKg8ndXHDTDWdbG1DkGzMwfvZ 10 -10
+            //1Pg1RhR6r6VBDLPaL5D8Gd5dxTzLL1YiVG
+            //1Dg9aN46gJ7BqLHrnXdozaLjb4meLZkTUv
+            //17FnHPctyTSMQCSXnBkEKPiBw4eq2dD8Ly
 
-            //String[] argss = {"createblockchain", "-address", "18b76o68gGKg8ndXHDTDWdbG1DkGzMwfvZ"};
-            //0000fcc80177312ea7cd9b3db9497af6cae1d69a746332571f14d3c687eee1d0
+            //String[] argss = {"createblockchain", "-address", "1Pg1RhR6r6VBDLPaL5D8Gd5dxTzLL1YiVG"};
+            //000098e728658c6d86b2aa01ea9e51ffa01ade05d6957dec3aba50e5d98b2dba
 
-            //String[] argss = {"mineblock", "-address" ,"1Gsnure8ovCy3SiK6Fth44kDcwrEHjtFuj"};
-
-
+            //String[] argss = {"mineblock", "-address" ,"17FnHPctyTSMQCSXnBkEKPiBw4eq2dD8Ly"};
             //String[] argss = {"printaddresses"};
-            //String[] argss = {"getbalance", "-address", "18b76o68gGKg8ndXHDTDWdbG1DkGzMwfvZ"};
+            //String[] argss = {"getbalance", "-address", "1Pg1RhR6r6VBDLPaL5D8Gd5dxTzLL1YiVG"};
 
-            //String[] argss = {"send", "-from", "1Gsnure8ovCy3SiK6Fth44kDcwrEHjtFuj", "-to", "1DRDoamPwRDQa1775dVig7X8BitJm1273D", "-amount", "10"};
-            String[] argss ={"printchain"};
-            serverThread.start();
+            //String[] argss = {"send", "-from", "1Dg9aN46gJ7BqLHrnXdozaLjb4meLZkTUv", "-to", "1Pg1RhR6r6VBDLPaL5D8Gd5dxTzLL1YiVG", "-amount", "10"};
+            //String[] argss ={"printchain"};
+
+            //String[] argss = {"downloadblockchain"};
+
+            //String[] argss = {"downloadBlockHead"};
+
+            //String[] argss = {"downloadTx"};
+
+            String[] argss = {"getIp"};
+            serverManager.start();
             cliThread.start(argss);
-
 
             }
          catch (Exception e) {

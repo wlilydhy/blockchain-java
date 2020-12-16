@@ -1,6 +1,7 @@
 package one.wangwei.blockchain.pb.protocols.DownloadBlocksHead;
 
 import lombok.Getter;
+import one.wangwei.blockchain.pb.Strategy.DownloadBlocksHead;
 import one.wangwei.blockchain.pb.Utils;
 import one.wangwei.blockchain.pb.protocols.Document;
 import one.wangwei.blockchain.pb.protocols.DownloadBlocks.DownloadBlocksProtocol;
@@ -26,7 +27,7 @@ public class DownloadBlocksHeadReply extends Message {
      * in this message there are no additional parameters.
      */
     public DownloadBlocksHeadReply() {
-        super(name, DownloadBlocksProtocol.protocolName, Type.Reply);
+        super(name, DownloadBlocksHeadProtocol.protocolName, Type.Reply);
     }
 
     /**
@@ -37,7 +38,7 @@ public class DownloadBlocksHeadReply extends Message {
      * @throws InvalidMessage when the doc does not contain all of the required parameters
      */
     public DownloadBlocksHeadReply(Document doc) throws InvalidMessage, DecoderException {
-        super(name, getDataProtocol.protocolName, Type.Reply, doc); // really just testing the name, otherwise nothing more to test
+        super(name, DownloadBlocksHeadProtocol.protocolName, Type.Reply, doc); // really just testing the name, otherwise nothing more to test
         this.doc = doc;
         this.blockHead = Utils.getInstance().stringToMap1((String)doc.get("blockHead"));
     }

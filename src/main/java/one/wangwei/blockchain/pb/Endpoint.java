@@ -1,14 +1,21 @@
 package one.wangwei.blockchain.pb;
 
 import one.wangwei.blockchain.Net.Inv;
+import one.wangwei.blockchain.pb.Strategy.DownloadTx;
+import one.wangwei.blockchain.pb.protocols.DownloadBlocks.DownloadBlocksProtocol;
+import one.wangwei.blockchain.pb.protocols.DownloadBlocksHead.DownloadBlocksHeadProtocol;
+import one.wangwei.blockchain.pb.protocols.DownloadTx.DownloadTxProtocol;
 import one.wangwei.blockchain.pb.protocols.HelloWorld.HelloWorldProtocol;
 import one.wangwei.blockchain.pb.protocols.IRequestReplyProtocol;
 import one.wangwei.blockchain.pb.protocols.Inv.InvProtocol;
 import one.wangwei.blockchain.pb.protocols.InvalidMessage;
 import one.wangwei.blockchain.pb.protocols.Message;
 import one.wangwei.blockchain.pb.protocols.Protocol;
+import one.wangwei.blockchain.pb.protocols.SPV.SPVProtocol;
+import one.wangwei.blockchain.pb.protocols.SearchTransaction.SearchTransactionProtocol;
 import one.wangwei.blockchain.pb.protocols.Version.VersionProtocol;
 import one.wangwei.blockchain.pb.protocols.getData.getDataProtocol;
+import one.wangwei.blockchain.pb.protocols.getIp.getIpProtocol;
 import one.wangwei.blockchain.pb.protocols.keepalive.KeepAliveProtocol;
 import one.wangwei.blockchain.pb.protocols.session.SessionProtocol;
 import org.apache.commons.codec.DecoderException;
@@ -175,6 +182,31 @@ public class Endpoint extends Thread {
 					case getDataProtocol.protocolName:
 						protocol=new getDataProtocol(this,manager);
 						break;
+
+					case DownloadBlocksProtocol.protocolName:
+						protocol = new DownloadBlocksProtocol(this,manager);
+						break;
+
+					case DownloadBlocksHeadProtocol.protocolName:
+						protocol = new DownloadBlocksHeadProtocol(this,manager);
+						break;
+
+					case DownloadTxProtocol.protocolName:
+						protocol = new DownloadTxProtocol(this,manager);
+						break;
+
+					case getIpProtocol.protocolName:
+						protocol = new getIpProtocol(this,manager);
+						break;
+
+					case SearchTransactionProtocol.protocolName:
+						protocol = new SearchTransactionProtocol(this,manager);
+						break;
+
+					case SPVProtocol.protocolName:
+						protocol = new SPVProtocol(this,manager);
+						break;
+
 					}
 					if(!manager.protocolRequested(this,protocol)) {
 						log.info("message dropped due to no protocol available: "+line);

@@ -19,6 +19,7 @@ import one.wangwei.blockchain.transaction.Transaction;
 import one.wangwei.blockchain.util.SerializeUtils;
 import org.apache.commons.codec.DecoderException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -72,17 +73,16 @@ public class DownloadTxProtocol extends Protocol implements IRequestReplyProtoco
     }
 
     @Override
-    public void receiveReply(Message msg) throws EndpointUnavailable {
+    public void receiveReply(Message msg) throws EndpointUnavailable, IOException {
         if(msg instanceof DownloadTxReply) {
             List<String> blockHashes = ((DownloadTxReply) msg).getTxHashList();
-            for(String str : blockHashes){
-                getDataProtocol getDataProtocol = new getDataProtocol(endpoint,manager);
-                getDataProtocol.setRequestType("Transaction");
-                getDataProtocol.setReplyType("Transaction");
-                getDataProtocol.setTransactionHash(str);
-                getDataProtocol.startAsClient();
-            }
             stopProtocol();
+            if(blockHashes!=null) {
+                for (String str : blockHashes) {
+                    Utils.getInstance().download(str, "Transaction");
+                }
+            }
+
         }
 
     }
@@ -98,18 +98,27 @@ public class DownloadTxProtocol extends Protocol implements IRequestReplyProtoco
             Iterator<Map.Entry<String, byte[]>> iterator = txBucket.entrySet().iterator();
             List<String> txHashes = new ArrayList<>();
             if (!iterator.hasNext()) {
+                doc.append("txHashes", "null");
                 log.info("txBucket is empty");
+                try {
+                    sendReply(new DownloadTxReply(doc));
+                } catch (InvalidMessage | DecoderException invalidMessage) {
+                    invalidMessage.printStackTrace();
+                }
+
             }
-            while (iterator.hasNext()) {
-                Map.Entry<String, byte[]> entry = iterator.next();
-                txHashes.add(entry.getKey());
-            }
-            String str = Utils.getInstance().listToString(txHashes);
-            doc.append("txHashes", str);
-            try {
-                sendReply(new DownloadTxReply(doc));
-            } catch (InvalidMessage | DecoderException invalidMessage) {
-                invalidMessage.printStackTrace();
+            else {
+                while (iterator.hasNext()) {
+                    Map.Entry<String, byte[]> entry = iterator.next();
+                    txHashes.add(entry.getKey());
+                }
+                String str = Utils.getInstance().listToString(txHashes);
+                doc.append("txHashes", str);
+                try {
+                    sendReply(new DownloadTxReply(doc));
+                } catch (InvalidMessage | DecoderException invalidMessage) {
+                    invalidMessage.printStackTrace();
+                }
             }
         }
     }

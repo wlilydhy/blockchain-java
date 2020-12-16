@@ -21,8 +21,13 @@ public class DownloadTxReply extends Message {
     }
 
     public DownloadTxReply(Document doc) throws InvalidMessage, DecoderException {
-        super(name, getDataProtocol.protocolName, Type.Reply, doc);
+        super(name, DownloadTxProtocol.protocolName, Type.Reply, doc);
         this.doc = doc;
-        this.txHashList = Utils.getInstance().stringToList((String) doc.get("txHashes"));
+        if(doc.get("txHashes").equals("null")){
+            this.txHashList=null;
+        }
+        else {
+            this.txHashList = Utils.getInstance().stringToList((String) doc.get("txHashes"));
+        }
     }
 }

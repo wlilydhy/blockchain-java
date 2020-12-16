@@ -398,12 +398,9 @@ public class RocksDBUtils {
     public Block getBlock(String blockHash) {
         byte[] blockBytes = blocksBucket.get(blockHash);
         if (blockBytes != null) {
-            //this.closeDB();
             return (Block) SerializeUtils.deserialize(blockBytes);
         }
-        //this.closeDB();
-        return null;
-        //throw new RuntimeException("Fail to get block ! blockHash=" + blockHash);
+        throw new RuntimeException("Fail to get block ! blockHash=" + blockHash);
     }
 
 

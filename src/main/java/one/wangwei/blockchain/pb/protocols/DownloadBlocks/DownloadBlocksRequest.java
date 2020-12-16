@@ -30,7 +30,7 @@ public class DownloadBlocksRequest extends Message {
      * @throws InvalidMessage when the doc does not contain all of the required parameters
      */
     public DownloadBlocksRequest(Document doc) throws InvalidMessage {
-        super(name,getDataProtocol.protocolName, Type.Request,doc); // really just testing the name, otherwise nothing more to test
+        super(name,DownloadBlocksProtocol.protocolName, Type.Request,doc); // really just testing the name, otherwise nothing more to test
         this.doc=doc;
     }
 }

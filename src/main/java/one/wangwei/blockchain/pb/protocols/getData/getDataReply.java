@@ -41,7 +41,7 @@ public class getDataReply extends Message {
             //String blockHash = (String) doc.get("Block");
             //this.block = RocksDBUtils.getInstance().getBlock(blockHash);
             this.block= Utils.getInstance().StringToBlock((String) doc.get("Block"));
-            //System.out.println("block is"+block.toString());
+            //System.out.println("block is:"+block.toString());
         }
         else if (ReplyType.equals("Transaction")) {
             //byte[] txHash = (byte[])doc.get("Transaction");

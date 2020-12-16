@@ -15,15 +15,10 @@ public class SendBlock implements ConnectionStrategy{
     Endpoint endpoint;
     Block block;
     public static final String strategyName = "SendBlock";
-    public SendBlock(ClientManager clientManager,Endpoint endpoint){
+    public SendBlock(ClientManager clientManager,Endpoint endpoint,Block block){
         this.clientManager=clientManager;
         this.endpoint=endpoint;
-
-        //test
-        Transaction transaction = Transaction.newCoinbaseTX("1Gsnure8ovCy3SiK6Fth44kDcwrEHjtFuj","goldenBlue");
-        block = Block.newGenesisBlock(transaction);
-        RocksDBUtils.getInstance().putBlock(block);
-        System.out.println("Block Hash:"+block.getHash());
+        this.block=block;
     }
     @Override
     public void algorithmMethod(){

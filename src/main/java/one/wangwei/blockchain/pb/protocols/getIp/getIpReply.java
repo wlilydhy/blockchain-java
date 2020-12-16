@@ -20,7 +20,7 @@ public class getIpReply extends Message{
      * in this message there are no additional parameters.
      */
     public getIpReply() {
-        super(name, InvProtocol.protocolName, Type.Reply);
+        super(name, getIpProtocol.protocolName, Type.Reply);
     }
 
     /**
@@ -31,9 +31,10 @@ public class getIpReply extends Message{
      * @throws InvalidMessage when the doc does not contain all of the required parameters
      */
     public getIpReply(Document doc) throws InvalidMessage {
-        super(name, InvProtocol.protocolName, Type.Reply, doc); // really just testing the name, otherwise nothing more to test
+        super(name, getIpProtocol.protocolName, Type.Reply, doc); // really just testing the name, otherwise nothing more to test
         this.doc = doc;
         this.ipString=(String)doc.get("ipString");
+
     }
 
 

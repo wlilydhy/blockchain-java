@@ -2,10 +2,12 @@ package one.wangwei.blockchain.transaction;
 
 import com.google.common.collect.Lists;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import one.wangwei.blockchain.util.ByteUtils;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -15,6 +17,7 @@ import java.util.List;
  * @date 2018/04/15
  */
 @Data
+@NoArgsConstructor
 public class MerkleTree {
 
     /**
@@ -30,12 +33,14 @@ public class MerkleTree {
         constructTree(leafHashes);
     }
 
+
     /**
      * 从底部叶子节点开始往上构建整个Merkle Tree
      *
      * @param leafHashes
      */
     private void constructTree(byte[][] leafHashes) {
+        System.out.println(leafHashes.length);
         if (leafHashes == null || leafHashes.length < 1) {
             throw new RuntimeException("ERROR:Fail to construct merkle tree ! leafHashes data invalid ! ");
         }

@@ -136,14 +136,14 @@ public class getDataProtocol extends Protocol implements IRequestReplyProtocol {
             if(((getDataRequest) msg).getRequestType().equals("Block")){
                 //向数据库查找该区块
                 String blockHash=((getDataRequest) msg).getBlockHash();
+                //System.out.println("my:"+blockHash);
                 Block block= RocksDBUtils.getInstance().getBlock(blockHash);
                 String str = Utils.getInstance().BlockToString(block);
-
+                //System.out.println("to:"+str);
                 /*test
                 Transaction transaction = Transaction.newCoinbaseTX("1Gsnure8ovCy3SiK6Fth44kDcwrEHjtFuj","ojbk");
                 Block block = Block.newGenesisBlock(transaction);
                 String str = Utils.getInstance().BlockToString(block);*/
-
                 //序列化后写入消息
                 doc.append("Block",str);
                 doc.append("ReplyType","Block");

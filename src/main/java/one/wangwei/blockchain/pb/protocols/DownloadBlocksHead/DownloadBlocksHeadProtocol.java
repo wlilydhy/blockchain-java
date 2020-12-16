@@ -4,6 +4,7 @@ import lombok.Setter;
 import one.wangwei.blockchain.pb.Endpoint;
 import one.wangwei.blockchain.pb.EndpointUnavailable;
 import one.wangwei.blockchain.pb.Manager;
+import one.wangwei.blockchain.pb.Strategy.DownloadBlocksHead;
 import one.wangwei.blockchain.pb.Utils;
 import one.wangwei.blockchain.pb.protocols.*;
 import one.wangwei.blockchain.pb.protocols.DownloadBlocks.DownloadBlocksReply;
@@ -89,7 +90,7 @@ public class DownloadBlocksHeadProtocol extends Protocol implements IRequestRepl
         if(msg instanceof DownloadBlocksHeadReply) {
            Map<String,byte[]> blockHead = ((DownloadBlocksHeadReply) msg).getBlockHead();
            RocksDBUtils.getInstance().setBlockHeadBucket(blockHead);
-            stopProtocol();
+           stopProtocol();
         }
 
     }
@@ -98,7 +99,7 @@ public class DownloadBlocksHeadProtocol extends Protocol implements IRequestRepl
     public void receiveRequest(Message msg) throws EndpointUnavailable, DecoderException {
         if(msg instanceof DownloadBlocksHeadRequest) {
             Document doc = new Document();
-            doc.append("name", DownloadBlocksReply.name);
+            doc.append("name", DownloadBlocksHeadReply.name);
             doc.append("protocolName", protocolName);
             doc.append("type", Message.Type.Reply.toString());
             Map<String,byte[]> blockHeadBucket = RocksDBUtils.getInstance().getBlockHeadBucket();

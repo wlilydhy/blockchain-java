@@ -80,6 +80,9 @@ public class getIpProtocol extends Protocol implements IRequestReplyProtocol {
     public void receiveReply(Message msg) throws EndpointUnavailable, DecoderException {
         if(msg instanceof getIpReply){
             String ipString = ((getIpReply) msg).getIpString();
+            if(ipString.equals("null")){
+                stopProtocol();
+            }
             Map<String,Integer> ipBucket = Utils.getInstance().stringToMap(ipString);
             Map<String,Integer> MyIpBucket = RocksDBUtils.getInstance().getIpBucket();
             Iterator<Map.Entry<String,Integer>> iterator = ipBucket.entrySet().iterator();
@@ -103,8 +106,11 @@ public class getIpProtocol extends Protocol implements IRequestReplyProtocol {
         if(msg instanceof getIpRequest) {
             Map<String,Integer> ipBucket = RocksDBUtils.getInstance().getIpBucket();
             String ipString = Utils.getInstance().MapToString(ipBucket);
+            if(ipBucket==null){
+                ipString = "null";
+            }
             Document doc = new Document();
-            doc.append("name", getIpRequest.name);
+            doc.append("name", getIpReply.name);
             doc.append("protocolName", protocolName);
             doc.append("type", Message.Type.Reply.toString());
             doc.append("ipString",ipString);

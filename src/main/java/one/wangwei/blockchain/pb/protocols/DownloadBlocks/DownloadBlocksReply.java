@@ -38,7 +38,7 @@ public class DownloadBlocksReply extends Message {
      * @throws InvalidMessage when the doc does not contain all of the required parameters
      */
     public DownloadBlocksReply(Document doc) throws InvalidMessage, DecoderException {
-        super(name, getDataProtocol.protocolName, Type.Reply, doc); // really just testing the name, otherwise nothing more to test
+        super(name, DownloadBlocksProtocol.protocolName, Type.Reply, doc); // really just testing the name, otherwise nothing more to test
         this.doc = doc;
         this.blockHashList = Utils.getInstance().stringToList((String)doc.get("blockHashes"));
     }

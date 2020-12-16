@@ -5,6 +5,7 @@ import one.wangwei.blockchain.block.Block;
 import one.wangwei.blockchain.block.BlockHead;
 import one.wangwei.blockchain.pb.Strategy.SendBlock;
 import one.wangwei.blockchain.pb.Strategy.SendTransaction;
+import one.wangwei.blockchain.pb.Strategy.getData;
 import one.wangwei.blockchain.pb.client.ClientManager;
 import one.wangwei.blockchain.pb.protocols.ICallback;
 import one.wangwei.blockchain.pb.protocols.Inv.InvProtocol;
@@ -278,8 +279,8 @@ public class Utils {
 	 */
 	public void broadcastBlock(Block block){
 		Map<String ,Integer> ipBucket = RocksDBUtils.getInstance().getIpBucket();
+		ipBucket.put("127.0.0.1",9999);
 		Iterator<Map.Entry<String,Integer>> iterator = ipBucket.entrySet().iterator();
-		//ipBucket.put("127.0.0.1",9999);
 		if(!iterator.hasNext()){
 			log.info("ipBucket is empty");
 		}
@@ -289,7 +290,8 @@ public class Utils {
 			Integer port = entry.getValue();
 			ClientManager clientManager = null;
 			try {
-				clientManager = new ClientManager(ip,port, SendBlock.strategyName);
+				clientManager = new ClientManager("127.0.0.1",9999, SendBlock.strategyName);
+				clientManager.setBlock(block);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -302,8 +304,9 @@ public class Utils {
 	 */
 	public void broadcastTransaction(Transaction transaction){
 		Map<String ,Integer> ipBucket = RocksDBUtils.getInstance().getIpBucket();
+		ipBucket.put("127.0.0.1",9999);
 		Iterator<Map.Entry<String,Integer>> iterator = ipBucket.entrySet().iterator();
-		//ipBucket.put("127.0.0.1",9999);
+
 		if(!iterator.hasNext()){
 			log.info("ipBucket is empty");
 		}
@@ -313,10 +316,30 @@ public class Utils {
 			Integer port = entry.getValue();
 			ClientManager clientManager = null;
 			try {
-				clientManager = new ClientManager(ip,port, SendTransaction.strategyName);
+				clientManager = new ClientManager("127.0.0.1",9999, SendTransaction.strategyName);
+				clientManager.setTransaction(transaction);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			clientManager.start();
+		}
+	}
+
+	public void download(String str,String type) throws IOException {
+		Map<String, Integer> ipBucket = RocksDBUtils.getInstance().getIpBucket();
+		ipBucket.put("127.0.0.1", 9999);
+		Iterator<Map.Entry<String, Integer>> iterator = ipBucket.entrySet().iterator();
+
+		if (!iterator.hasNext()) {
+			log.info("ipBucket is empty");
+		}
+		while (iterator.hasNext()) {
+			Map.Entry<String, Integer> entry = iterator.next();
+			String ip = entry.getKey();
+			Integer port = entry.getValue();
+			ClientManager clientManager = new ClientManager(ip,port,getData.strategyName);
+			clientManager.setTxHash(str);
+			clientManager.setGetDataType(type);
 			clientManager.start();
 		}
 	}
